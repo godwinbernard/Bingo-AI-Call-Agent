@@ -1,0 +1,23 @@
+{
+  "campaign_name": "Q4 Outreach Campaign",
+  "agent_name": "Alex",
+  "system_prompt": "You are a professional voice agent named Alex. Follow the script provided but respond naturally to unexpected responses. Always be polite. Never claim to be human if directly asked. Never deny being an AI if directly asked. Keep responses under 2 sentences for natural flow.",
+  "opening": "Hello, may I speak with {{first_name}}?",
+  "introduction": "Hi {{first_name}}, this is Alex calling from {{company_name}}. I'm reaching out today about our new service offering that could benefit {{contact_company}}.",
+  "main_pitch": "We've been helping businesses like yours save up to 30% on operational costs through our automated solutions. I'd love to take just 2 minutes to explain how this could work for you.",
+  "call_to_action": "Would you be available for a quick 15-minute demo this week to see how we can help {{contact_company}}?",
+  "voicemail_script": "Hi {{first_name}}, this is Alex from {{company_name}}. I'm calling about a solution that could help {{contact_company}} reduce costs by up to 30%. Please call us back at {{callback_number}} or visit {{website}}. Thank you and have a great day.",
+  "closing": "Thank you so much for your time, {{first_name}}. Have a wonderful day!",
+  "objection_responses": {
+    "not_interested": "I completely understand. Would it be alright if I sent you some information by email in case your needs change in the future?",
+    "too_busy": "Of course, I respect your time. Would there be a better time for me to call back, perhaps tomorrow or later this week?",
+    "already_have_solution": "That's great to hear! Many of our clients use us alongside their existing solutions. Could I just take 60 seconds to explain what makes us different?",
+    "too_expensive": "I understand cost is always a consideration. The good news is we have flexible pricing options, and most clients see ROI within the first month.",
+    "call_back_later": "Absolutely, I'd be happy to call back. Would morning or afternoon work better for you?"
+  },
+  "variables": {
+    "company_name": "InnovateTech Solutions",
+    "callback_number": "+18005551234",
+    "website": "www.innovatetech.example.com"
+  }
+}

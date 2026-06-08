@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bingo AI Call Agent — Enterprise Voice AI Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060816;
+    --bg2: #0b1020;
+    --bg3: #11182d;
+    --card: rgba(255,255,255,0.035);
+    --card-border: rgba(148,163,184,0.14);
+    --card-hover: rgba(255,255,255,0.055);
+    --accent: #6f86ff;
+    --accent2: #8b7bff;
+    --accent3: #ef7b7b;
+    --text: #eef2ff;
+    --muted: rgba(238,242,255,0.66);
+    --faint: rgba(238,242,255,0.22);
+    --font-display: 'Syne', sans-serif;
+    --font-head: 'IBM Plex Sans', sans-serif;
+    --font-body: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --radius: 16px;
+    --radius-sm: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID NOISE BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(111,134,255,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 80%, rgba(139,123,255,0.09) 0%, transparent 60%),
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1, h2, h3, h4 { font-family: var(--font-head); font-weight: 650; line-height: 1.1; }
+
+  .hero h1,
+  .hero h1 span {
+    font-family: var(--font-display);
+    letter-spacing: -0.04em;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 1; }
+  .container-narrow { max-width: 800px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 1; }
+  section { padding: 100px 0; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 40px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(6,8,22,0.74);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(148,163,184,0.12);
+    transition: all 0.3s;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    font-family: var(--font-head);
+    color: #050510;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+    border-radius: inherit;
+  }
+
+  .logo-text {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .logo-text span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+  .nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-ghost {
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--card-border);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: rgba(148,163,184,0.24); background: var(--card); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #060816;
+    font-weight: 600;
+    box-shadow: 0 12px 30px rgba(111,134,255,0.24);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 18px 40px rgba(111,134,255,0.32);
+    transform: translateY(-1px);
+  }
+
+  .btn-large {
+    padding: 14px 32px;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(111,134,255,0.38);
+  }
+
+  .btn-outline:hover {
+    background: rgba(111,134,255,0.08);
+    border-color: var(--accent);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 160px 0 120px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(111,134,255,0.08);
+    border: 1px solid rgba(111,134,255,0.24);
+    border-radius: 100px;
+    padding: 6px 16px 6px 8px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: var(--accent);
+    animation: fadeInDown 0.8s ease both;
+  }
+
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .hero h1 {
+    font-size: clamp(52px, 7vw, 88px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.0;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.8s ease 0.1s both;
+  }
+
+  .hero h1 .gradient-text {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, #ef7b7b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(17px, 2vw, 20px);
+    color: var(--muted);
+    max-width: 580px;
+    margin: 0 auto 40px;
+    font-weight: 400;
+    line-height: 1.6;
+    animation: fadeInUp 0.8s ease 0.2s both;
+  }
+
+  .hero-ctas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 60px;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+
+  /* ── WAVEFORM ANIMATION ── */
+  .waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 40px;
+    margin-bottom: 60px;
+    animation: fadeIn 1s ease 0.5s both;
+  }
+
+  .waveform-bar {
+    width: 3px;
+    background: var(--accent);
+    border-radius: 3px;
+    opacity: 0.6;
+  }
+
+  .waveform-bar:nth-child(1) { height: 12px; animation: wave 1.2s ease-in-out 0.0s infinite alternate; }
+  .waveform-bar:nth-child(2) { height: 24px; animation: wave 1.2s ease-in-out 0.1s infinite alternate; }
+  .waveform-bar:nth-child(3) { height: 36px; animation: wave 1.2s ease-in-out 0.2s infinite alternate; }
+  .waveform-bar:nth-child(4) { height: 28px; animation: wave 1.2s ease-in-out 0.3s infinite alternate; }
+  .waveform-bar:nth-child(5) { height: 16px; animation: wave 1.2s ease-in-out 0.4s infinite alternate; }
+  .waveform-bar:nth-child(6) { height: 32px; animation: wave 1.2s ease-in-out 0.5s infinite alternate; }
+  .waveform-bar:nth-child(7) { height: 40px; animation: wave 1.2s ease-in-out 0.6s infinite alternate; }
+  .waveform-bar:nth-child(8) { height: 28px; animation: wave 1.2s ease-in-out 0.7s infinite alternate; }
+  .waveform-bar:nth-child(9) { height: 20px; animation: wave 1.2s ease-in-out 0.8s infinite alternate; }
+  .waveform-bar:nth-child(10) { height: 36px; animation: wave 1.2s ease-in-out 0.9s infinite alternate; }
+  .waveform-bar:nth-child(11) { height: 14px; animation: wave 1.2s ease-in-out 0.1s infinite alternate; }
+  .waveform-bar:nth-child(12) { height: 28px; animation: wave 1.2s ease-in-out 0.2s infinite alternate; }
+  .waveform-bar:nth-child(13) { height: 38px; animation: wave 1.2s ease-in-out 0.3s infinite alternate; }
+  .waveform-bar:nth-child(14) { height: 22px; animation: wave 1.2s ease-in-out 0.4s infinite alternate; }
+  .waveform-bar:nth-child(15) { height: 12px; animation: wave 1.2s ease-in-out 0.5s infinite alternate; }
+
+  @keyframes wave {
+    from { transform: scaleY(0.3); opacity: 0.4; }
+    to { transform: scaleY(1); opacity: 0.9; }
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+    animation: fadeIn 1s ease 0.6s both;
+  }
+
+  .stat-item {
+    flex: 1;
+    max-width: 220px;
+    padding: 28px 20px;
+    text-align: center;
+    border-right: 1px solid var(--card-border);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-number {
+    font-family: var(--font-head);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-number span { color: var(--accent); }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ── LOGOS ── */
+  .logos-section {
+    padding: 60px 0;
+    text-align: center;
+  }
+
+  .logos-label {
+    font-size: 13px;
+    color: var(--faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .logos-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .logo-pill {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--faint);
+    letter-spacing: -0.01em;
+    transition: color 0.3s;
+  }
+
+  .logo-pill:hover { color: var(--muted); }
+
+  /* ── SECTION HEADING ── */
+  .section-head {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .section-head h2 {
+    font-size: clamp(36px, 4vw, 54px);
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+
+  .section-head p {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto;
+    font-weight: 300;
+  }
+
+  /* ── FEATURE CARDS ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature-card:hover {
+    background: var(--card-hover);
+    border-color: rgba(111,134,255,0.24);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.34), 0 0 40px rgba(111,134,255,0.06);
+  }
+
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  .feature-icon.teal { background: rgba(111,134,255,0.1); }
+  .feature-icon.purple { background: rgba(139,123,255,0.1); }
+  .feature-icon.red { background: rgba(239,123,123,0.1); }
+
+  .feature-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── BIG FEATURE ── */
+  .big-feature {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .big-feature.reverse { direction: rtl; }
+  .big-feature.reverse > * { direction: ltr; }
+
+  .big-feature-text h2 {
+    font-size: clamp(32px, 3vw, 46px);
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+
+  .big-feature-text p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .check-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .check-list li::before {
+    content: '';
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(111,134,255,0.15);
+    border: 1px solid rgba(111,134,255,0.4);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='%236f86ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  /* ── DASHBOARD MOCKUP ── */
+  .dashboard-mockup {
+    background: var(--bg2);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .mockup-titlebar {
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--card-border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .titlebar-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  .titlebar-dot.red { background: #ff6b6b; }
+  .titlebar-dot.yellow { background: #ffd166; }
+  .titlebar-dot.green { background: var(--accent); }
+
+  .mockup-body { padding: 20px; }
+
+  .mockup-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .mockup-stat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .mockup-stat-label { font-size: 10px; color: var(--faint); margin-bottom: 4px; }
+  .mockup-stat-value {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .mockup-stat-value.accent { color: var(--accent); }
+
+  .mockup-calls {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .mockup-calls-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .mockup-calls-title { font-size: 12px; font-weight: 600; color: var(--muted); }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.5s ease infinite;
+  }
+
+  .mockup-call-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 12px;
+  }
+
+  .mockup-call-row:last-child { border-bottom: none; }
+
+  .call-name { color: var(--text); font-weight: 500; }
+  .call-duration { color: var(--faint); font-family: var(--font-mono); }
+
+  .call-status {
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .status-live { background: rgba(111,134,255,0.12); color: var(--accent); }
+  .status-done { background: rgba(99,219,119,0.12); color: #63db77; }
+  .status-vm { background: rgba(255,209,102,0.12); color: #ffd166; }
+
+  /* ── PRICING ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .pricing-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .pricing-card.featured {
+    background: rgba(111,134,255,0.04);
+    border-color: rgba(111,134,255,0.3);
+    transform: scale(1.02);
+    box-shadow: 0 0 60px rgba(111,134,255,0.08);
+  }
+
+  .pricing-card:hover:not(.featured) {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-4px);
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #050510;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+  }
+
+  .pricing-tier {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .pricing-price {
+    font-family: var(--font-head);
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+
+  .pricing-price span { font-size: 20px; font-weight: 400; color: var(--muted); vertical-align: top; margin-top: 8px; display: inline-block; }
+
+  .pricing-period { font-size: 13px; color: var(--faint); margin-bottom: 24px; }
+
+  .pricing-divider {
+    height: 1px;
+    background: var(--card-border);
+    margin: 24px 0;
+  }
+
+  .pricing-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .pricing-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .pricing-features li .check { color: var(--accent); font-size: 16px; }
+  .pricing-features li .cross { color: var(--faint); font-size: 16px; }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .testimonial-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.3s;
+  }
+
+  .testimonial-card:hover {
+    background: var(--card-hover);
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-3px);
+  }
+
+  .testimonial-stars {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 16px;
+    color: #ffd166;
+    font-size: 14px;
+  }
+
+  .testimonial-text {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .author-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .author-name { font-size: 14px; font-weight: 600; }
+  .author-title { font-size: 12px; color: var(--faint); }
+
+  /* ── FAQ ── */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .faq-item {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .faq-item:hover { border-color: rgba(111,134,255,0.2); }
+
+  .faq-question {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: color 0.2s;
+  }
+
+  .faq-question:hover { color: var(--accent); }
+
+  .faq-chevron {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    font-size: 12px;
+  }
+
+  .faq-item.open .faq-chevron {
+    background: rgba(111,134,255,0.12);
+    color: var(--accent);
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+    padding: 0 24px;
+  }
+
+  .faq-item.open .faq-answer {
+    max-height: 300px;
+    padding: 0 24px 20px;
+  }
+
+  .faq-answer p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    padding-top: 4px;
+    border-top: 1px solid var(--card-border);
+    padding-top: 16px;
+  }
+
+  /* ── CONTACT FORM ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .contact-info h2 {
+    font-size: 40px;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+
+  .contact-info p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 36px;
+  }
+
+  .contact-detail {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .contact-detail-icon {
+    width: 40px; height: 40px;
+    background: rgba(111,134,255,0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .contact-detail-text { font-size: 14px; color: var(--muted); }
+  .contact-detail-value { font-size: 15px; color: var(--text); font-weight: 500; }
+
+  .contact-form-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: rgba(111,134,255,0.4);
+    background: rgba(111,134,255,0.04);
+    box-shadow: 0 0 0 3px rgba(111,134,255,0.08);
+  }
+
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--faint); }
+
+  .form-select {
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .form-select option { background: #0a0a1f; color: var(--text); }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+  }
+
+  .form-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #050510;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .form-submit:hover {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    box-shadow: 0 12px 30px rgba(111,134,255,0.24);
+    transform: translateY(-1px);
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+
+  .steps-grid::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--card-border), var(--accent), var(--card-border), transparent);
+  }
+
+  .step-item {
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .step-number {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent);
+    margin: 0 auto 20px;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s;
+  }
+
+  .step-item:hover .step-number {
+    background: rgba(111,134,255,0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 30px rgba(111,134,255,0.2);
+  }
+
+  .step-item h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .step-item p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(111,134,255,0.05), rgba(139,123,255,0.05));
+    border: 1px solid rgba(111,134,255,0.1);
+    border-radius: 24px;
+    padding: 80px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(111,134,255,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(36px, 4vw, 52px);
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+
+  .cta-section p {
+    font-size: 18px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  .cta-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--card-border);
+    padding: 60px 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 48px;
+  }
+
+  .footer-brand p {
+    font-size: 14px;
+    color: var(--faint);
+    line-height: 1.6;
+    margin-top: 16px;
+    font-weight: 300;
+    max-width: 280px;
+  }
+
+  .footer-col h5 {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .footer-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-col a {
+    font-size: 14px;
+    color: var(--faint);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover { color: var(--muted); }
+
+  .footer-bottom {
+    border-top: 1px solid var(--card-border);
+    padding-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy { font-size: 13px; color: var(--faint); }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer-links a {
+    font-size: 13px;
+    color: var(--faint);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--muted); }
+
+  /* ── HELP BOT ── */
+  .helpbot-trigger {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 200;
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 8px 30px rgba(111,134,255,0.3), 0 0 0 0 rgba(111,134,255,0.4);
+    transition: all 0.3s;
+    animation: botPulse 3s ease infinite;
+  }
+
+  @keyframes botPulse {
+    0%, 100% { box-shadow: 0 8px 30px rgba(111,134,255,0.3), 0 0 0 0 rgba(111,134,255,0.4); }
+    50% { box-shadow: 0 8px 30px rgba(111,134,255,0.4), 0 0 0 10px rgba(111,134,255,0); }
+  }
+
+  .helpbot-trigger:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(111,134,255,0.5);
+  }
+
+  .helpbot-window {
+    position: fixed;
+    bottom: 96px;
+    right: 28px;
+    z-index: 200;
+    width: 360px;
+    background: var(--bg2);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    display: none;
+    flex-direction: column;
+    max-height: 500px;
+    transition: all 0.3s;
+  }
+
+  .helpbot-window.open { display: flex; animation: slideUp 0.3s ease; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .helpbot-header {
+    background: linear-gradient(135deg, rgba(111,134,255,0.1), rgba(139,123,255,0.1));
+    border-bottom: 1px solid var(--card-border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bot-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .bot-name { font-size: 14px; font-weight: 700; }
+  .bot-status { font-size: 11px; color: var(--accent); }
+
+  .helpbot-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--faint);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+
+  .helpbot-close:hover { color: var(--muted); }
+
+  .helpbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bot-message, .user-message {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .bot-message {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    align-self: flex-start;
+    border-radius: 4px 12px 12px 12px;
+  }
+
+  .user-message {
+    background: rgba(111,134,255,0.15);
+    color: var(--text);
+    align-self: flex-end;
+    border-radius: 12px 4px 12px 12px;
+  }
+
+  .bot-typing {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    padding: 12px 16px;
+    border-radius: 4px 12px 12px 12px;
+    width: fit-content;
+  }
+
+  .typing-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: typing 1.2s ease infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  .helpbot-quick {
+    padding: 8px 16px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .quick-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+
+  .quick-btn:hover {
+    background: rgba(111,134,255,0.08);
+    border-color: rgba(111,134,255,0.3);
+    color: var(--accent);
+  }
+
+  .helpbot-input-row {
+    padding: 12px 16px;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .bot-input {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .bot-input:focus { border-color: rgba(111,134,255,0.4); }
+  .bot-input::placeholder { color: var(--faint); }
+
+  .bot-send {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #050510;
+    font-size: 14px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .bot-send:hover { background: linear-gradient(135deg, var(--accent), var(--accent2)); transform: scale(1.05); }
+
+  /* ── COMPLIANCE BADGES ── */
+  .badges-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .compliance-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .compliance-badge:hover {
+    border-color: rgba(111,134,255,0.2);
+    color: var(--text);
+  }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .container { padding: 0 20px; }
+    .features-grid, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr; }
+    .big-feature, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .big-feature.reverse { direction: ltr; }
+    .steps-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .steps-grid::before { display: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .nav-links { display: none; }
+    .hero-ctas { flex-direction: column; align-items: stretch; text-align: center; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--card-border); }
+    .pricing-card.featured { transform: none; }
+    .helpbot-window { width: calc(100vw - 40px); right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">B</div>
+    <span class="logo-text">Bingo <span>AI</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How it Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#testimonials">Customers</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="#contact" class="btn btn-ghost">Contact Sales</a>
+    <a href="#" class="btn btn-primary">Start Free Trial →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Now with GPT-5 level reasoning & 48 languages
+    </div>
+    <h1>
+      AI that calls.<br>
+      <span class="gradient-text">Humans that close.</span>
+    </h1>
+    <p class="hero-sub">
+      Bingo AI deploys intelligent voice agents that sound indistinguishably human, follow your scripts, and handle objections — at unlimited scale, 24/7.
+    </p>
+    <div class="hero-ctas">
+      <a href="#" class="btn btn-primary btn-large">Start Free Trial — 14 days free</a>
+      <a href="#contact" class="btn btn-outline btn-large">▶ Watch Demo</a>
+    </div>
+    <div class="waveform">
+      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+      <div class="waveform-bar"></div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number"><span id="calls-counter">0</span>M<span>+</span></div>
+        <div class="stat-label">Calls completed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number"><span id="rate-counter">0</span>%</div>
+        <div class="stat-label">Answer rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">&lt;<span id="ms-counter">0</span>ms</div>
+        <div class="stat-label">Response latency</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number"><span id="lang-counter">0</span><span>+</span></div>
+        <div class="stat-label">Languages supported</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOGOS ── -->
+<div class="logos-section">
+  <div class="container">
+    <p class="logos-label">Trusted by growth teams at</p>
+    <div class="logos-row">
+      <div class="logo-pill">Redfin</div>
+      <div class="logo-pill">Paychex</div>
+      <div class="logo-pill">SoFi</div>
+      <div class="logo-pill">Brex</div>
+      <div class="logo-pill">GoFundMe</div>
+      <div class="logo-pill">Docusign</div>
+      <div class="logo-pill">Nubank</div>
+      <div class="logo-pill">ADT</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="label">Platform Features</div>
+      <h2>Built for enterprise.<br>Loved by teams.</h2>
+      <p>Everything you need to run thousands of intelligent calls simultaneously — without the complexity.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon teal">🎙️</div>
+        <h3>Ultra-realistic voice</h3>
+        <p>Powered by ElevenLabs voice cloning — your agents sound indistinguishable from your best human callers, with natural pauses and emotional tone.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon purple">🧠</div>
+        <h3>Adaptive conversation AI</h3>
+        <p>Claude-powered reasoning follows your script while handling any objection dynamically. Never gets flustered, never goes off-brand.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon red">⚡</div>
+        <h3>Sub-500ms latency</h3>
+        <p>Real conversations need instant responses. Our edge-optimized pipeline processes speech, thinks, and responds in under half a second.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon teal">📊</div>
+        <h3>Live campaign dashboard</h3>
+        <p>Watch every call in real time. Monitor outcomes, confidence scores, and transcripts as they happen — with full audit logs.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon purple">🔌</div>
+        <h3>Native CRM integrations</h3>
+        <p>Auto-log calls, outcomes, and transcripts to HubSpot, Salesforce, or any platform via Zapier webhooks. Zero manual data entry.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon red">🛡️</div>
+        <h3>Built-in compliance</h3>
+        <p>TCPA-compliant calling, DNC list management, automatic consent disclosures, and SOC 2 Type II certification. Ship safely.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how-it-works" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border);">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="label">How it Works</div>
+      <h2>From CSV to conversation<br>in under 5 minutes</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item reveal">
+        <div class="step-number">01</div>
+        <h4>Upload your contacts</h4>
+        <p>Drop a CSV with names, numbers, and context. We validate, clean, and filter against your DNC list automatically.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-number">02</div>
+        <h4>Build your script</h4>
+        <p>Use our visual script builder to define your goal, talking points, and objection handling. Preview live with AI simulation.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-number">03</div>
+        <h4>Launch your campaign</h4>
+        <p>Hit launch. Bingo dials automatically, handles conversations, detects voicemail, and logs every outcome in real time.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-number">04</div>
+        <h4>Review and optimize</h4>
+        <p>Analyze transcripts, A/B test scripts, and let AI suggest improvements based on what's actually converting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BIG FEATURE 1 ── -->
+<section>
+  <div class="container">
+    <div class="big-feature reveal">
+      <div class="big-feature-text">
+        <div class="label">Live Dashboard</div>
+        <h2>Watch 5,000 calls happen in real time</h2>
+        <p>Your operations center for every campaign. See active calls, live transcripts, confidence scores, and outcomes — all updating the moment they happen.</p>
+        <ul class="check-list">
+          <li>Live audio waveform per active call</li>
+          <li>Real-time transcript with sentiment analysis</li>
+          <li>Outcome prediction before the call ends</li>
+          <li>Instant campaign pause and resume controls</li>
+          <li>Per-agent performance breakdown</li>
+        </ul>
+        <a href="#" class="btn btn-outline btn-large">Explore the dashboard →</a>
+      </div>
+      <div class="dashboard-mockup reveal">
+        <div class="mockup-titlebar">
+          <div class="titlebar-dot red"></div>
+          <div class="titlebar-dot yellow"></div>
+          <div class="titlebar-dot green"></div>
+          <span style="font-size:12px; color: var(--faint); margin-left:8px; font-family: var(--font-mono);">bingo.ai/dashboard</span>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-stats">
+            <div class="mockup-stat">
+              <div class="mockup-stat-label">ACTIVE CALLS</div>
+              <div class="mockup-stat-value accent" id="mock-active">247</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="mockup-stat-label">SUCCESS RATE</div>
+              <div class="mockup-stat-value">68.3%</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="mockup-stat-label">CALLS TODAY</div>
+              <div class="mockup-stat-value">4,821</div>
+            </div>
+          </div>
+          <div class="mockup-calls">
+            <div class="mockup-calls-header">
+              <span class="mockup-calls-title">LIVE CALLS</span>
+              <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+            </div>
+            <div class="mockup-call-row">
+              <span class="call-name">Sarah Mitchell</span>
+              <span class="call-duration">1:43</span>
+              <span class="call-status status-live">● Talking</span>
+            </div>
+            <div class="mockup-call-row">
+              <span class="call-name">James Okafor</span>
+              <span class="call-duration">0:28</span>
+              <span class="call-status status-live">● Listening</span>
+            </div>
+            <div class="mockup-call-row">
+              <span class="call-name">Wei Chen</span>
+              <span class="call-duration">3:12</span>
+              <span class="call-status status-done">✓ Success</span>
+            </div>
+            <div class="mockup-call-row">
+              <span class="call-name">Maria Rodriguez</span>
+              <span class="call-duration">0:09</span>
+              <span class="call-status status-vm">📭 Voicemail</span>
+            </div>
+            <div class="mockup-call-row">
+              <span class="call-name">David Park</span>
+              <span class="call-duration">2:01</span>
+              <span class="call-status status-live">● Talking</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BIG FEATURE 2 ── -->
+<section style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border);">
+  <div class="container">
+    <div class="big-feature reverse reveal">
+      <div class="big-feature-text">
+        <div class="label">Script Builder</div>
+        <h2>Design conversations, not just scripts</h2>
+        <p>Our visual script builder lets you map every branch of a conversation — what happens when they're interested, when they object, when they ask for more time. The AI follows it precisely.</p>
+        <ul class="check-list">
+          <li>Drag-and-drop conversation flow builder</li>
+          <li>Live AI preview with mock responses</li>
+          <li>Variable injection: {name}, {context}, {company}</li>
+          <li>Industry-specific templates pre-loaded</li>
+          <li>A/B test multiple script variants</li>
+        </ul>
+        <a href="#" class="btn btn-outline btn-large">Build your first script →</a>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--card-border); border-radius: 20px; padding: 32px; position: relative;">
+        <div class="label">Script Preview</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="background: rgba(111,134,255,0.08); border: 1px solid rgba(111,134,255,0.2); border-radius: 12px; padding: 14px 18px;">
+            <div style="font-size: 11px; color: var(--accent); font-family: var(--font-mono); margin-bottom: 6px;">🤖 BINGO AI</div>
+            <div style="font-size: 13px; color: var(--text);">Hi Sarah, this is Alex from Bingo calling. I know you recently signed up for our free trial — do you have 2 minutes?</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 18px; margin-left: 20px;">
+            <div style="font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 6px;">👤 CONTACT</div>
+            <div style="font-size: 13px; color: var(--muted);">Sure, what's this about?</div>
+          </div>
+          <div style="background: rgba(111,134,255,0.08); border: 1px solid rgba(111,134,255,0.2); border-radius: 12px; padding: 14px 18px;">
+            <div style="font-size: 11px; color: var(--accent); font-family: var(--font-mono); margin-bottom: 6px;">🤖 BINGO AI</div>
+            <div style="font-size: 13px; color: var(--text);">I wanted to quickly check how the trial is going and see if there's anything I can help you get set up — most teams see their first campaign live within the hour.</div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <div style="flex: 1; background: var(--card); border: 1px solid rgba(99,219,119,0.3); border-radius: 8px; padding: 8px 12px; font-size: 11px; color: #63db77; text-align: center;">→ Interested</div>
+            <div style="flex: 1; background: var(--card); border: 1px solid rgba(255,209,102,0.3); border-radius: 8px; padding: 8px 12px; font-size: 11px; color: #ffd166; text-align: center;">→ Objection</div>
+          <div style="flex: 1; background: var(--card); border: 1px solid rgba(239,123,123,0.3); border-radius: 8px; padding: 8px 12px; font-size: 11px; color: var(--accent3); text-align: center;">→ Not now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPLIANCE ── -->
+<section style="padding: 60px 0;">
+  <div class="container">
+    <div class="section-head reveal" style="margin-bottom: 36px;">
+      <div class="label">Trust & Security</div>
+      <h2 style="font-size: 32px;">Enterprise-grade security and compliance</h2>
+    </div>
+    <div class="badges-row reveal">
+      <div class="compliance-badge">🔒 SOC 2 Type II</div>
+      <div class="compliance-badge">⚕️ HIPAA Ready</div>
+      <div class="compliance-badge">🌍 GDPR Compliant</div>
+      <div class="compliance-badge">📋 TCPA Compliant</div>
+      <div class="compliance-badge">🏦 PCI DSS</div>
+      <div class="compliance-badge">🇪🇺 EU AI Act Ready</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section id="pricing" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--card-border);">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="label">Pricing</div>
+      <h2>Simple, usage-based pricing</h2>
+      <p>Start free. Scale when you're ready. No hidden fees, no per-seat nonsense.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price">$99<span>/mo</span></div>
+        <div class="pricing-period">500 calls included</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> 500 calls/month</li>
+          <li><span class="check">✓</span> 2 active campaigns</li>
+          <li><span class="check">✓</span> 3 custom scripts</li>
+          <li><span class="check">✓</span> Basic analytics</li>
+          <li><span class="check">✓</span> Email support</li>
+          <li><span class="cross">–</span> Custom voice</li>
+          <li><span class="cross">–</span> CRM integrations</li>
+          <li><span class="cross">–</span> API access</li>
+        </ul>
+        <a href="#" class="btn btn-ghost" style="width:100%; justify-content:center;">Get started</a>
+      </div>
+      <div class="pricing-card featured reveal">
+        <div class="popular-badge">MOST POPULAR</div>
+        <div class="pricing-tier">Growth</div>
+        <div class="pricing-price">$299<span>/mo</span></div>
+        <div class="pricing-period">2,000 calls included</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> 2,000 calls/month</li>
+          <li><span class="check">✓</span> Unlimited campaigns</li>
+          <li><span class="check">✓</span> Unlimited scripts</li>
+          <li><span class="check">✓</span> Advanced analytics</li>
+          <li><span class="check">✓</span> Priority support</li>
+          <li><span class="check">✓</span> Custom AI voice</li>
+          <li><span class="check">✓</span> HubSpot + Salesforce</li>
+          <li><span class="check">✓</span> Full API access</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width:100%; justify-content:center;">Start free trial</a>
+      </div>
+      <div class="pricing-card reveal">
+        <div class="pricing-tier">Enterprise</div>
+        <div class="pricing-price">$999<span>/mo</span></div>
+        <div class="pricing-period">Unlimited calls</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Unlimited calls</li>
+          <li><span class="check">✓</span> Everything in Growth</li>
+          <li><span class="check">✓</span> White label option</li>
+          <li><span class="check">✓</span> SSO + RBAC</li>
+          <li><span class="check">✓</span> Audit logs</li>
+          <li><span class="check">✓</span> 99.9% SLA</li>
+          <li><span class="check">✓</span> Dedicated account mgr</li>
+          <li><span class="check">✓</span> On-premise deploy</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost" style="width:100%; justify-content:center;">Contact sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="label">Customer Stories</div>
+      <h2>Trusted by teams who move fast</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"We replaced our entire outbound BDR team with Bingo. Not joking. 3,200 calls a day, 71% connect rate, and our reps only talk to warm leads now."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: rgba(111,134,255,0.15); color: var(--accent);">JL</div>
+          <div>
+            <div class="author-name">Jake Liu</div>
+            <div class="author-title">VP Sales, PropTech Co.</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The voice quality is genuinely shocking. We ran a blind test with our team — nobody could tell it was AI on over half the calls. That's the benchmark."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: rgba(139,123,255,0.15); color: var(--accent2);">SK</div>
+          <div>
+            <div class="author-name">Sofia Kowalski</div>
+            <div class="author-title">Head of Growth, FinServ</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"We do appointment reminders for 40 clinics. Bingo handles 15,000 reminder calls a week. No-show rate dropped 34%. ROI was immediate."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: rgba(239,123,123,0.15); color: var(--accent3);">MR</div>
+          <div>
+            <div class="author-name">Marcus Reed</div>
+            <div class="author-title">CTO, HealthTech Platform</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--card-border);">
+  <div class="container-narrow">
+    <div class="section-head reveal">
+      <div class="label">FAQ</div>
+      <h2>Questions we get asked a lot</h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Can contacts tell they're talking to an AI?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Our voices are powered by ElevenLabs voice cloning with natural prosody, breathing, and filler words. In blind tests, contacts correctly identify the caller as AI less than 40% of the time. That said, Bingo is always honest if directly asked — we never deny being an AI, which is both ethical and TCPA-compliant.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What happens when a contact goes completely off-script?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Bingo uses Claude AI as its reasoning engine, so it handles unexpected questions naturally using the context you provided about your product or service. You can also define fallback behaviors — like transferring to a human agent, offering a callback, or gracefully ending the call — for situations that fall outside the script's scope.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How do you handle TCPA compliance and DNC lists?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Every number is checked against your uploaded DNC list before dialing — this check runs at the moment of the call, not at upload time. Bingo also enforces configurable calling hours per timezone, adds required disclosure statements, and logs consent signals. We recommend consulting a compliance attorney for your specific use case, but our platform gives you all the technical controls you need.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What CRMs and tools does Bingo integrate with?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Growth and Enterprise plans include native integrations with HubSpot and Salesforce — calls, transcripts, and outcomes sync automatically. We also provide full webhook support and a REST API, which means you can connect Bingo to virtually any tool via Zapier, Make, or custom code. Notion, Airtable, and Pipedrive are popular through Zapier.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How many concurrent calls can Bingo handle?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Starter plans support up to 5 concurrent calls. Growth plans go up to 50. Enterprise plans are uncapped and can be configured for thousands of simultaneous calls with dedicated infrastructure. We've processed over 10,000 concurrent calls for large enterprise customers during peak campaigns.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Is there a free trial? What's included?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes — all plans start with a 14-day free trial at the Growth tier (2,000 calls, all features unlocked). No credit card required to start. At the end of the trial, you can choose any plan or cancel without being charged. We also offer a 30-minute onboarding call to help you get your first campaign live.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <div class="label">Get in Touch</div>
+        <h2>Let's talk about your use case</h2>
+        <p>Whether you're exploring Bingo for the first time or ready to deploy at enterprise scale, our team is ready to help you set up your first campaign — usually the same day.</p>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📧</div>
+          <div>
+            <div class="contact-detail-text">Email us directly</div>
+            <div class="contact-detail-value">hello@bingo.ai</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">💬</div>
+          <div>
+            <div class="contact-detail-text">Live chat support</div>
+            <div class="contact-detail-value">Available Mon–Fri, 9am–6pm EST</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📅</div>
+          <div>
+            <div class="contact-detail-text">Book a demo call</div>
+            <div class="contact-detail-value">30-min personalized walkthrough</div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form-card reveal">
+        <h3 style="font-size: 20px; margin-bottom: 24px; letter-spacing: -0.02em;">Send us a message</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First name</label>
+            <input type="text" class="form-input" placeholder="Sarah">
+          </div>
+          <div class="form-group">
+            <label>Last name</label>
+            <input type="text" class="form-input" placeholder="Johnson">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Work email</label>
+          <input type="email" class="form-input" placeholder="sarah@company.com">
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" class="form-input" placeholder="Acme Corp">
+        </div>
+        <div class="form-group">
+          <label>Use case</label>
+          <select class="form-select">
+            <option value="">Select your primary use case</option>
+            <option>Outbound sales / lead qualification</option>
+            <option>Appointment reminders</option>
+            <option>Debt collection / payment reminders</option>
+            <option>Customer re-engagement</option>
+            <option>Survey / feedback collection</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea class="form-textarea" placeholder="Tell us about your call volume, team size, and what you're hoping to achieve..."></textarea>
+        </div>
+        <button class="form-submit" id="submit-btn" onclick="submitForm()">
+          Send message →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section style="padding: 60px 0 100px;">
+  <div class="container">
+    <div class="cta-section reveal">
+      <div class="label">Get Started Today</div>
+      <h2>Your first 500 calls are on us</h2>
+      <p>Join 2,400+ companies already using Bingo to scale their outbound operations.</p>
+      <div class="cta-buttons">
+        <a href="#" class="btn btn-primary btn-large">Start free trial — no card needed</a>
+        <a href="#contact" class="btn btn-ghost btn-large">Talk to sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="display: inline-flex; text-decoration: none;">
+          <div class="logo-icon" style="width:32px; height:32px; font-size:15px;">B</div>
+          <span class="logo-text" style="font-size:16px;">Bingo <span>AI</span></span>
+        </a>
+        <p>Enterprise-grade AI voice agents that dial, converse, and convert — at any scale, in any language, 24/7.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#">AI Call Automation Features</a></li>
+          <li><a href="#">Subscription Pricing & Plans</a></li>
+          <li><a href="#">CRM, API & Workflow Integrations</a></li>
+          <li><a href="#">Product Updates & Changelog</a></li>
+          <li><a href="#">Public Product Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About Bingo AI</a></li>
+          <li><a href="#">Insights, Tips & Case Studies</a></li>
+          <li><a href="#">Careers & Open Roles</a></li>
+          <li><a href="#">Press Kit & Media Coverage</a></li>
+          <li><a href="#">Contact Sales & Support</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">TCPA & Compliance Standards</a></li>
+          <li><a href="#">Security Overview</a></li>
+          <li><a href="#">Trust Center</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Bingo AI Call Agent, Inc. All rights reserved.</span>
+      <div class="footer-links">
+        <a href="#">Twitter/X</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+        <a href="#">Status</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ── HELP BOT ── -->
+<button class="helpbot-trigger" onclick="toggleBot()" id="bot-trigger" aria-label="Open help chat">🤖</button>
+
+<div class="helpbot-window" id="helpbot-window">
+  <div class="helpbot-header">
+    <div class="bot-avatar">🤖</div>
+    <div>
+      <div class="bot-name">Bingo Assistant</div>
+      <div class="bot-status">● Online — typically replies instantly</div>
+    </div>
+    <button class="helpbot-close" onclick="toggleBot()">✕</button>
+  </div>
+  <div class="helpbot-messages" id="bot-messages">
+    <div class="bot-message">Hey! 👋 I'm Bingo's AI assistant. I can help you understand our platform, pricing, or get you started with a free trial. What can I help you with?</div>
+  </div>
+  <div class="helpbot-quick" id="quick-btns">
+    <button class="quick-btn" onclick="quickAsk('How does pricing work?')">💰 Pricing</button>
+    <button class="quick-btn" onclick="quickAsk('How do I get started?')">🚀 Get started</button>
+    <button class="quick-btn" onclick="quickAsk('What integrations do you support?')">🔌 Integrations</button>
+    <button class="quick-btn" onclick="quickAsk('Is there a free trial?')">🎁 Free trial</button>
+  </div>
+  <div class="helpbot-input-row">
+    <input type="text" class="bot-input" id="bot-input" placeholder="Ask me anything..." onkeydown="handleBotKey(event)">
+    <button class="bot-send" onclick="sendBotMessage()">→</button>
+  </div>
+</div>
+
+<script>
+  // ── COUNTER ANIMATION ──
+  function animateCounter(el, target, duration, suffix='') {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start = Math.min(start + step, target);
+      el.textContent = Math.round(start);
+      if (start >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  let countersStarted = false;
+  function startCounters() {
+    if (countersStarted) return;
+    countersStarted = true;
+    animateCounter(document.getElementById('calls-counter'), 47, 1800);
+    animateCounter(document.getElementById('rate-counter'), 73, 1500);
+    animateCounter(document.getElementById('ms-counter'), 380, 1200);
+    animateCounter(document.getElementById('lang-counter'), 48, 1000);
+  }
+
+  // ── SCROLL REVEALS ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        if (entry.target.closest('.hero')) startCounters();
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  setTimeout(startCounters, 600);
+
+  // ── NAVBAR SCROLL ──
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 60) {
+      nav.style.borderBottom = '1px solid rgba(111,134,255,0.1)';
+    } else {
+      nav.style.borderBottom = '1px solid rgba(148,163,184,0.12)';
+    }
+  });
+
+  // ── FAQ ──
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // ── LIVE DASHBOARD MOCK ──
+  const names = ['Sarah Mitchell','James Okafor','Wei Chen','Maria Rodriguez','David Park','Emily Tanaka','Carlos Ruiz','Anna Smith','Tom Wheeler','Priya Patel'];
+  const statuses = [
+    {text:'● Talking', cls:'status-live'},
+    {text:'● Listening', cls:'status-live'},
+    {text:'✓ Success', cls:'status-done'},
+    {text:'📭 Voicemail', cls:'status-vm'},
+    {text:'● Processing', cls:'status-live'},
+  ];
+
+  let activeCount = 247;
+  setInterval(() => {
+    activeCount += Math.floor(Math.random() * 7) - 3;
+    activeCount = Math.max(200, Math.min(300, activeCount));
+    const el = document.getElementById('mock-active');
+    if (el) el.textContent = activeCount;
+  }, 2000);
+
+  // ── FORM SUBMIT ──
+  function submitForm() {
+    const btn = document.getElementById('submit-btn');
+    btn.textContent = '✓ Message sent! We\'ll be in touch within 24 hours.';
+    btn.style.background = '#63db77';
+    btn.style.color = '#050510';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = 'Send message →';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.disabled = false;
+    }, 4000);
+  }
+
+  // ── HELP BOT ──
+  let botOpen = false;
+
+  function toggleBot() {
+    botOpen = !botOpen;
+    const win = document.getElementById('helpbot-window');
+    if (botOpen) {
+      win.classList.add('open');
+    } else {
+      win.classList.remove('open');
+    }
+  }
+
+  const botResponses = {
+    'pricing': "We offer three plans:\n\n• **Starter** — $99/mo (500 calls)\n• **Growth** — $299/mo (2,000 calls) ← most popular\n• **Enterprise** — $999/mo (unlimited)\n\nAll plans start with a 14-day free trial. No credit card needed!",
+    'get started': "Getting started is easy:\n\n1. Sign up for a free trial (14 days, no card)\n2. Upload your contact CSV\n3. Build your call script\n4. Hit Launch!\n\nMost customers make their first call within 15 minutes of signing up.",
+    'integrations': "We integrate natively with:\n\n• HubSpot and Salesforce (Growth+)\n• Zapier (connect 5,000+ apps)\n• Full REST API\n• Webhooks for real-time events\n\nPipedrive, Notion, and Airtable are popular via Zapier.",
+    'free trial': "Yes! Every plan includes a **14-day free trial** at Growth tier — that's 2,000 calls, all features unlocked, no credit card required.\n\nYou can also book a 30-min onboarding call where we'll help you get your first campaign live.",
+    'default': "Great question! I'd love to help you with that. For more detailed questions, you can also email us at hello@bingo.ai or click 'Contact Sales' in the nav — our team usually responds within a few hours."
+  };
+
+  function quickAsk(question) {
+    addUserMessage(question);
+    document.getElementById('quick-btns').style.display = 'none';
+    setTimeout(() => showTyping(), 300);
+    setTimeout(() => {
+      removeTyping();
+      const key = Object.keys(botResponses).find(k => question.toLowerCase().includes(k));
+      addBotMessage(botResponses[key] || botResponses.default);
+    }, 1400);
+  }
+
+  function sendBotMessage() {
+    const input = document.getElementById('bot-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    addUserMessage(text);
+    document.getElementById('quick-btns').style.display = 'none';
+    setTimeout(() => showTyping(), 300);
+    setTimeout(() => {
+      removeTyping();
+      const key = Object.keys(botResponses).find(k => text.toLowerCase().includes(k));
+      addBotMessage(botResponses[key] || botResponses.default);
+    }, 1600);
+  }
+
+  function handleBotKey(e) {
+    if (e.key === 'Enter') sendBotMessage();
+  }
+
+  function addUserMessage(text) {
+    const msgs = document.getElementById('bot-messages');
+    const div = document.createElement('div');
+    div.className = 'user-message';
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function addBotMessage(text) {
+    const msgs = document.getElementById('bot-messages');
+    const div = document.createElement('div');
+    div.className = 'bot-message';
+    div.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping() {
+    const msgs = document.getElementById('bot-messages');
+    const div = document.createElement('div');
+    div.id = 'typing-indicator';
+    div.className = 'bot-typing';
+    div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing-indicator');
+    if (t) t.remove();
+  }
+
+  // ── SMOOTH SCROLL ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>

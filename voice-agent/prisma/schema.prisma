@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SubscriptionTier {
+  STARTER
+  GROWTH
+  ENTERPRISE
+  PAY_AS_YOU_GO
+}
+
+enum SubscriptionStatus {
+  active
+  past_due
+  canceled
+  trialing
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MANAGER
+  VIEWER
+}
+
+enum MemberStatus {
+  active
+  invited
+  suspended
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+}
+
+enum InvoiceStatus {
+  paid
+  open
+  void
+  uncollectible
+}
+
+model Organization {
+  id                    String             @id @default(cuid())
+  name                  String
+  slug                  String             @unique
+  logo_url              String?
+  stripe_customer_id    String             @unique
+  stripe_subscription_id String?
+  subscription_tier     SubscriptionTier
+  subscription_status   SubscriptionStatus
+  trial_ends_at         DateTime?
+  billing_email         String
+  billing_name          String?
+  calls_used_this_month Int                @default(0)
+  usage_reset_date      DateTime
+  timezone              String             @default("America/New_York")
+  call_hours_start      String             @default("08:00")
+  call_hours_end        String             @default("21:00")
+  max_concurrent        Int                @default(1)
+  members               OrganizationMember[]
+  campaigns             Campaign[]
+  scripts               Script[]
+  contacts              Contact[]
+  calls                 Call[]
+  invoices              Invoice[]
+  api_keys              ApiKey[]
+  audit_logs            AuditLog[]
+  usage_records         UsageRecord[]
+  invitations           Invitation[]
+  subscriptions         Subscription[]
+  dnc_lists             DncList[]
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @updatedAt
+}
+
+model OrganizationMember {
+  id              String         @id @default(cuid())
+  organization_id String
+  user_id         String
+  email           String
+  name            String
+  role            MemberRole
+  invited_by      String?
+  invited_at      DateTime?
+  joined_at       DateTime?
+  status          MemberStatus   @default(active)
+  organization    Organization   @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime       @default(now())
+
+  @@index([organization_id])
+  @@index([user_id])
+}
+
+model Invitation {
+  id              String           @id @default(cuid())
+  organization_id String
+  email           String
+  role            MemberRole
+  token           String           @unique
+  invited_by      String
+  expires_at      DateTime
+  accepted_at     DateTime?
+  status          InvitationStatus @default(pending)
+  organization    Organization     @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime         @default(now())
+
+  @@index([organization_id])
+  @@index([email])
+}
+
+model Subscription {
+  id                      String             @id @default(cuid())
+  organization_id         String             @unique
+  stripe_subscription_id  String             @unique
+  stripe_price_id         String
+  tier                    SubscriptionTier
+  status                  SubscriptionStatus
+  current_period_start    DateTime
+  current_period_end      DateTime
+  cancel_at_period_end    Boolean            @default(false)
+  canceled_at             DateTime?
+  trial_start             DateTime?
+  trial_end               DateTime?
+  organization            Organization       @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at              DateTime           @default(now())
+  updated_at              DateTime           @updatedAt
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  organization_id String
+  stripe_invoice_id String      @unique
+  amount_paid     Int
+  amount_due      Int
+  currency        String
+  status          InvoiceStatus
+  invoice_url     String?
+  invoice_pdf     String?
+  period_start    DateTime
+  period_end      DateTime
+  paid_at         DateTime?
+  organization    Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime      @default(now())
+
+  @@index([organization_id])
+}
+
+model UsageRecord {
+  id              String        @id @default(cuid())
+  organization_id String
+  month           String
+  calls_made      Int           @default(0)
+  minutes_used    Int           @default(0)
+  amount_cents    Int           @default(0)
+  recorded_at     DateTime      @default(now())
+  organization    Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, month])
+}
+
+model ApiKey {
+  id              String        @id @default(cuid())
+  organization_id String
+  name            String
+  key_hash        String
+  key_prefix      String
+  last_used_at    DateTime?
+  expires_at      DateTime?
+  is_active       Boolean       @default(true)
+  created_by      String
+  organization    Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime      @default(now())
+
+  @@index([organization_id])
+}
+
+model AuditLog {
+  id              String        @id @default(cuid())
+  organization_id String
+  user_id         String?
+  action          String
+  resource_type   String
+  resource_id     String?
+  metadata        Json?
+  ip_address      String?
+  user_agent      String?
+  organization    Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime      @default(now())
+
+  @@index([organization_id, created_at])
+}
+
+model Campaign {
+  id              String       @id @default(cuid())
+  organization_id String
+  name            String
+  status          String       @default("draft")
+  metadata        Json?
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@index([organization_id])
+}
+
+model Script {
+  id              String       @id @default(cuid())
+  organization_id String
+  name            String
+  content         Json
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@index([organization_id])
+}
+
+model Contact {
+  id              String       @id @default(cuid())
+  organization_id String
+  name            String
+  phone           String
+  email           String?
+  metadata        Json?
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@index([organization_id])
+}
+
+model Call {
+  id              String       @id @default(cuid())
+  organization_id String
+  call_sid        String       @unique
+  campaign_id     String?
+  status          String
+  duration_seconds Int          @default(0)
+  outcome         String?
+  transcript      Json?
+  error_message   String?
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@index([organization_id])
+  @@index([campaign_id])
+}
+
+model DncList {
+  id              String       @id @default(cuid())
+  organization_id String
+  phone           String
+  reason          String?
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_at      DateTime     @default(now())
+
+  @@index([organization_id])
+}

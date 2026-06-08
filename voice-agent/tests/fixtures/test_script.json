@@ -1,0 +1,22 @@
+{
+  "campaign_name": "Test Outreach Campaign",
+  "agent_name": "Alex",
+  "system_prompt": "You are a concise voice agent. Never claim to be human.",
+  "opening": "Hello {name}, is now a bad time?",
+  "introduction": "I'm calling about {context}.",
+  "main_pitch": "We help teams save time and move faster.",
+  "call_to_action": "Would you be open to a quick demo?",
+  "voicemail_script": "Hi {name}, this is Alex from Acme AI. Please call us back when convenient.",
+  "closing": "Thanks for your time, {name}. Goodbye.",
+  "failure_close": "Thanks for your time. Goodbye.",
+  "objection_responses": {
+    "not_interested": "Understood. I will close this out politely.",
+    "too_busy": "Totally fair. Can I call back later today?",
+    "too_expensive": "I hear you. We can keep it brief if you'd like."
+  },
+  "variables": {
+    "company_name": "Acme AI",
+    "callback_number": "+18005551234",
+    "website": "example.com"
+  }
+}

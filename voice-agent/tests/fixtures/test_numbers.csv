@@ -1,0 +1,6 @@
+name,phone,context,campaign_id
+Test User One,+15005550001,interested in demo,test_camp
+Test User Two,+15005550002,requested callback,test_camp
+DNC User,+15005550003,should be skipped,test_camp
+Bad Number,+1XXXXXXXXXX,invalid format,test_camp
+Test User Three,+15005550004,free trial signup,test_camp
