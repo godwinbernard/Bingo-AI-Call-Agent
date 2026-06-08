@@ -1,6 +1,6 @@
 # Bingo AI Call Agent
 
-An end-to-end AI-powered outbound calling platform — backend engine, operator dashboard, and public marketing homepage.
+An end-to-end AI-powered outbound calling platform consisting of three apps.
 
 ## Monorepo Structure
 
@@ -8,16 +8,16 @@ An end-to-end AI-powered outbound calling platform — backend engine, operator 
 Bingo-AI-Call-Agent/
 ├── apps/
 │   ├── backend/      Node.js + Express voice AI engine
-│   ├── dashboard/    Next.js 14 operator dashboard
+│   ├── dashboard/    Next.js 14 operator dashboard (dark-mode UI)
 │   └── homepage/     Next.js 14 TypeScript marketing site
-└── archive/          Original HTML prototype
+├── archive/          Original single-file HTML prototype
+├── .gitignore
+└── README.md
 ```
-
----
 
 ## Apps
 
-### `apps/backend` — Voice AI Engine
+### apps/backend — Voice AI Engine
 
 Node.js + Express backend that powers all outbound calling.
 
@@ -47,7 +47,7 @@ npm test               # full test suite
 
 ---
 
-### `apps/dashboard` — Operator Dashboard
+### apps/dashboard — Operator Dashboard
 
 Next.js 14 dark-mode dashboard for managing campaigns, monitoring live calls, and reviewing analytics.
 
@@ -61,20 +61,20 @@ Next.js 14 dark-mode dashboard for managing campaigns, monitoring live calls, an
 - Call detail drawer with full transcript
 - Multi-step campaign wizard with CSV drag-and-drop
 - Script builder with phone preview
-- Glassmorphism design system (dark, indigo accent)
+- Glassmorphism design system (dark, indigo accent `#6366F1`)
 - Mobile-responsive with collapsible sidebar
 
 ```bash
 cd apps/dashboard
 cp .env.example .env.local   # fill in your keys
 npm install
-npm run dev                  # runs on http://localhost:3001
+npm run dev                  # http://localhost:3001
 npm run build
 ```
 
 ---
 
-### `apps/homepage` — Marketing Homepage
+### apps/homepage — Marketing Homepage
 
 Next.js 14 TypeScript marketing site converted from a single-file HTML prototype.
 
@@ -95,7 +95,7 @@ Next.js 14 TypeScript marketing site converted from a single-file HTML prototype
 ```bash
 cd apps/homepage
 npm install
-npm run dev     # runs on http://localhost:3000
+npm run dev     # http://localhost:3000
 npm run build   # 0 errors, fully static output
 ```
 
