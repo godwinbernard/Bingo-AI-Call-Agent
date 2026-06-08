@@ -7,12 +7,43 @@ const { buildInviteTeamEmail } = require('../email/templates/inviteTeamEmail');
 const { buildInvoiceEmail } = require('../email/templates/invoiceEmail');
 const { sendTransactionalEmail } = require('../email/resendClient');
 const { upsertInvoiceFromStripe } = require('./invoiceService');
+const { pauseCampaignsForOrganization } = require('./billingLifecycleService');
+
+const TIER_ORDER = ['PAY_AS_YOU_GO', 'STARTER', 'GROWTH', 'ENTERPRISE'];
 
 function normalizeSubscriptionStatus(status) {
   if (status === 'trialing') return 'trialing';
   if (status === 'past_due') return 'past_due';
   if (status === 'canceled' || status === 'incomplete_expired') return 'canceled';
   return 'active';
+}
+
+function getTierRank(tier) {
+  const index = TIER_ORDER.indexOf(tier);
+  return index === -1 ? 0 : index;
+}
+
+function getSubscriptionTier(subscription) {
+  return tierFromPriceId(subscription.items?.data?.[0]?.price?.id)
+    || subscription.metadata?.tier
+    || 'GROWTH';
+}
+
+async function recordBillingAudit(prisma, organizationId, userId, action, metadata = {}, resourceType = 'subscription', resourceId = null) {
+  if (!prisma?.auditLog?.create || !organizationId) {
+    return null;
+  }
+
+  return prisma.auditLog.create({
+    data: {
+      organization_id: organizationId,
+      user_id: userId || null,
+      action,
+      resource_type: resourceType,
+      resource_id: resourceId,
+      metadata,
+    },
+  });
 }
 
 async function createCustomer(org, deps = {}) {
@@ -78,7 +109,7 @@ async function createBillingPortalSession(org, returnUrl, deps = {}) {
 async function syncSubscriptionRecord(subscription, deps = {}) {
   const prisma = deps.prisma || getPrisma();
   const stripePriceId = subscription.items?.data?.[0]?.price?.id || subscription.plan?.id || '';
-  const tier = tierFromPriceId(stripePriceId) || subscription.metadata?.tier || 'GROWTH';
+  const tier = getSubscriptionTier(subscription);
   const status = normalizeSubscriptionStatus(subscription.status);
   const organizationId = subscription.metadata?.org_id;
 
@@ -119,6 +150,21 @@ async function syncSubscriptionRecord(subscription, deps = {}) {
     },
   });
 
+  await recordBillingAudit(
+    prisma,
+    organizationId,
+    deps.userId,
+    'subscription_synced',
+    {
+      tier,
+      status,
+      cancel_at_period_end: Boolean(subscription.cancel_at_period_end),
+      stripe_price_id: stripePriceId,
+    },
+    'subscription',
+    subscription.id
+  );
+
   return organization;
 }
 
@@ -134,6 +180,16 @@ async function handleSubscriptionCreated(subscription, deps = {}) {
     }),
   });
 
+  await recordBillingAudit(
+    deps.prisma || getPrisma(),
+    organization.id,
+    deps.userId,
+    'subscription_created',
+    { tier: organization.subscription_tier, status: organization.subscription_status },
+    'subscription',
+    subscription.id
+  );
+
   return { ok: true, organization };
 }
 
@@ -141,14 +197,54 @@ async function handleSubscriptionUpdated(subscription, deps = {}) {
   const organization = await syncSubscriptionRecord(subscription, deps);
   if (!organization) return { skipped: true };
 
-  const shouldNotify = subscription.previous_attributes?.items || subscription.cancel_at_period_end;
-  if (shouldNotify) {
+  const previousTier = deps.previousAttributes?.items?.data?.[0]?.price?.id
+    ? tierFromPriceId(deps.previousAttributes.items.data[0].price.id)
+    : deps.previousAttributes?.metadata?.tier
+      ? deps.previousAttributes.metadata.tier
+    : deps.previousAttributes?.plan?.id
+      ? tierFromPriceId(deps.previousAttributes.plan.id)
+      : null;
+  const newTier = organization.subscription_tier;
+  const scheduledCancellation = Boolean(subscription.cancel_at_period_end) && !deps.previousAttributes?.cancel_at_period_end;
+  const tierChanged = previousTier && previousTier !== newTier;
+  const isUpgrade = tierChanged && getTierRank(newTier) > getTierRank(previousTier);
+  const isDowngrade = tierChanged && getTierRank(newTier) < getTierRank(previousTier);
+
+  if (isUpgrade) {
     await sendTransactionalEmail({
       to: organization.billing_email,
       subject: `You're now on ${organization.subscription_tier} 🚀`,
-      html: `<p>Your plan has been updated to ${organization.subscription_tier}.</p>`,
+      html: `<p>Your plan has been upgraded to ${organization.subscription_tier}. The new features are available immediately.</p>`,
+    });
+  } else if (isDowngrade) {
+    await sendTransactionalEmail({
+      to: organization.billing_email,
+      subject: `Your plan will change to ${organization.subscription_tier}`,
+      html: `<p>Your plan has been updated to ${organization.subscription_tier}. Some features will be removed at the next billing boundary.</p>`,
+    });
+  } else if (scheduledCancellation) {
+    await sendTransactionalEmail({
+      to: organization.billing_email,
+      subject: 'Subscription scheduled for cancellation',
+      html: `<p>Your subscription for ${organization.name} is set to cancel at the end of the current billing period.</p>`,
     });
   }
+
+  await recordBillingAudit(
+    deps.prisma || getPrisma(),
+    organization.id,
+    deps.userId,
+    'subscription_updated',
+    {
+      previous_tier: previousTier,
+      new_tier: newTier,
+      is_upgrade: isUpgrade,
+      is_downgrade: isDowngrade,
+      cancel_at_period_end: Boolean(subscription.cancel_at_period_end),
+    },
+    'subscription',
+    subscription.id
+  );
 
   return { ok: true, organization };
 }
@@ -171,6 +267,16 @@ async function handleSubscriptionCanceled(subscription, deps = {}) {
     subject: 'Subscription canceled',
     html: `<p>Your subscription has been canceled for ${organization.name}.</p>`,
   });
+
+  await recordBillingAudit(
+    prisma,
+    organizationId,
+    deps.userId,
+    'subscription_canceled',
+    { subscription_id: subscription.id },
+    'subscription',
+    subscription.id
+  );
 
   return { ok: true, organization };
 }
@@ -204,12 +310,52 @@ async function handlePaymentFailed(invoice, deps = {}) {
     }),
   });
 
+  await recordBillingAudit(
+    prisma,
+    organization.id,
+    deps.userId,
+    'invoice_payment_failed',
+    { invoice_id: invoice.id, amount_due: invoice.amount_due || 0 },
+    'invoice',
+    invoice.id
+  );
+
+  const failureCount = await prisma.auditLog.count({
+    where: {
+      organization_id: organization.id,
+      action: 'invoice_payment_failed',
+      created_at: {
+        gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
+    },
+  });
+
+  if (failureCount >= 3) {
+    await pauseCampaignsForOrganization(prisma, organization.id);
+  }
+
   return { ok: true, organization };
 }
 
 async function handleInvoicePaid(invoice, deps = {}) {
+  const prisma = deps.prisma || getPrisma();
   const record = await upsertInvoiceFromStripe(invoice, deps);
-  const organization = invoice.metadata?.org_name ? { name: invoice.metadata.org_name, billing_email: invoice.customer_email } : null;
+  const organizationId = invoice.metadata?.org_id || record.organization_id;
+  let organization = null;
+
+  if (organizationId) {
+    organization = await prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: {
+        name: true,
+        billing_email: true,
+      },
+    });
+  }
+
+  if (!organization && invoice.metadata?.org_name && invoice.customer_email) {
+    organization = { name: invoice.metadata.org_name, billing_email: invoice.customer_email };
+  }
 
   if (organization?.billing_email) {
     await sendTransactionalEmail({
@@ -221,6 +367,18 @@ async function handleInvoicePaid(invoice, deps = {}) {
         periodLabel: `${new Date((invoice.period_start || Date.now() / 1000) * 1000).toLocaleDateString()} - ${new Date((invoice.period_end || Date.now() / 1000) * 1000).toLocaleDateString()}`,
       }),
     });
+  }
+
+  if (organizationId) {
+    await recordBillingAudit(
+      prisma,
+      organizationId,
+      deps.userId,
+      'invoice_paid',
+      { invoice_id: invoice.id, amount_paid: invoice.amount_paid || 0 },
+      'invoice',
+      invoice.id
+    );
   }
 
   return { ok: true, invoice: record };

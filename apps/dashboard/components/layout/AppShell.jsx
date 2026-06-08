@@ -10,7 +10,12 @@ import ToastProvider from '@/components/shared/ToastProvider';
 export default function AppShell({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const authRoute = pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up') || pathname.startsWith('/onboarding');
+  const authRoute =
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/sign-up') ||
+    pathname.startsWith('/onboarding') ||
+    pathname.startsWith('/admin/login') ||
+    pathname.startsWith('/superadmin/login');
   const sidebarWidth = collapsed ? 64 : 240;
 
   if (authRoute) {

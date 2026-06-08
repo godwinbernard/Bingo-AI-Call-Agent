@@ -1,47 +1,24 @@
 const express = require('express');
-const crypto = require('crypto');
 const { requireTenant } = require('../../tenancy/tenantMiddleware');
 const { permissionMiddleware } = require('../../auth/permissions');
-const { getPrisma } = require('../../data/prisma');
-const { sendInviteEmail } = require('../../billing/subscriptionService');
+const { createInvitation } = require('../../team/invitationService');
 
 const router = express.Router();
 
 router.post('/', requireTenant, permissionMiddleware('member.manage'), async (req, res) => {
   try {
-    const prisma = getPrisma();
-    const { email, role, inviterName, acceptBaseUrl } = req.body;
-    const token = crypto.randomBytes(24).toString('hex');
-    const invitation = await prisma.invitation.create({
-      data: {
-        organization_id: req.organization.id,
-        email,
-        role,
-        token,
-        invited_by: req.auth.userId,
-        expires_at: new Date(Date.now() + 72 * 60 * 60 * 1000),
+    const invitation = await createInvitation({
+      prisma: req.prisma,
+      organization: req.organization,
+      inviter: {
+        userId: req.auth.userId,
+        name: req.member?.name || req.auth.userId,
       },
+      email: req.body.email,
+      role: req.body.role,
+      acceptBaseUrl: req.body.acceptBaseUrl || process.env.BASE_URL || 'http://localhost:3001',
+      sendEmail: req.body.sendEmail !== false,
     });
-
-    await sendInviteEmail({
-      inviterName: inviterName || req.member.name,
-      companyName: req.organization.name,
-      role,
-      acceptUrl: `${acceptBaseUrl || process.env.BASE_URL || 'http://localhost:3001'}/onboarding?token=${token}`,
-      to: email,
-    });
-
-    await prisma.auditLog.create({
-      data: {
-        organization_id: req.organization.id,
-        user_id: req.auth.userId,
-        action: 'invite_sent',
-        resource_type: 'invitation',
-        resource_id: invitation.id,
-        metadata: { email, role },
-      },
-    });
-
     return res.json({ invitation });
   } catch (error) {
     return res.status(500).json({ error: error.message });

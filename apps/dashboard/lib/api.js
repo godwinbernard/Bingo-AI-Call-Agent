@@ -6,10 +6,15 @@ export function apiUrl(path) {
 }
 
 export async function apiFetch(path, options = {}) {
+  const impersonationToken = typeof window !== 'undefined'
+    ? window.localStorage.getItem('voiceagent_impersonation_token')
+    : null;
+
   const response = await fetch(apiUrl(path), {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(impersonationToken ? { 'x-impersonation-token': impersonationToken } : {}),
       ...(options.headers || {}),
     },
     credentials: 'include',

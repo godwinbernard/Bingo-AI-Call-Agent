@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
 
@@ -46,6 +46,11 @@ export default function AdminRevenuePage() {
     }
   }
 
+  const maxBar = useMemo(() => {
+    const values = summary?.revenueChart?.map((point) => point.value || 0) || [];
+    return Math.max(1, ...values);
+  }, [summary]);
+
   if (loading) {
     return (
       <div className="max-w-xl mx-auto glass-card p-8">
@@ -68,16 +73,16 @@ export default function AdminRevenuePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Revenue</h1>
-          <p className="text-slate-400 text-sm mt-1">Platform revenue summary from the admin data service.</p>
+          <p className="text-slate-400 text-sm mt-1">Platform revenue summary from the admin backend.</p>
         </div>
         <Link href="/admin" className="btn-ghost">Back to overview</Link>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
         {[
           ['MRR', summary?.mrr || '—'],
           ['Active orgs', summary?.activeOrganizations?.toLocaleString() || '—'],
@@ -92,9 +97,26 @@ export default function AdminRevenuePage() {
       </div>
 
       <div className="glass-card p-6">
-        <p className="text-slate-400">MRR, churn, and LTV charts go here.</p>
-        <div className="mt-6 h-64 rounded-xl bg-slate-900/60 grid place-items-center text-slate-500">
-          LTV: {summary?.ltvEstimate || '—'}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Revenue Chart</h2>
+          <p className="text-sm text-slate-400">LTV estimate {summary?.ltvEstimate || '—'}</p>
+        </div>
+        <div className="space-y-3">
+          {(summary?.revenueChart || []).map((point) => (
+            <div key={point.label} className="grid grid-cols-[140px_1fr_90px] items-center gap-4">
+              <span className="text-sm text-slate-300">{point.label}</span>
+              <div className="h-3 rounded-full bg-slate-900/80 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-indigo-500"
+                  style={{ width: `${(Number(point.value || 0) / maxBar) * 100}%` }}
+                />
+              </div>
+              <span className="text-sm text-slate-400 text-right">{point.valueLabel}</span>
+            </div>
+          ))}
+          {!summary?.revenueChart?.length ? (
+            <p className="text-sm text-slate-400">No revenue chart data yet.</p>
+          ) : null}
         </div>
       </div>
     </div>

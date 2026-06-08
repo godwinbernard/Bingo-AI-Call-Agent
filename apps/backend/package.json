@@ -8,6 +8,7 @@
     "dev": "nodemon src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
+    "prisma:seed": "node prisma/seed.js",
     "setup:stripe": "node scripts/setupStripe.js",
     "cron:daily": "node scripts/cron/daily.js",
     "cron:monthly": "node scripts/cron/monthly.js",

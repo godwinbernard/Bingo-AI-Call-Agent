@@ -40,9 +40,22 @@ app.use('/api/billing/checkout', require('./api/billing/checkout'));
 app.use('/api/billing/portal', require('./api/billing/portal'));
 app.use('/api/billing/webhook', require('./api/billing/webhook'));
 app.use('/api/billing/usage', require('./api/billing/usage'));
+app.use('/api/billing/invoices', require('./api/billing/invoices'));
+app.use('/api/admin', require('./api/admin'));
 app.use('/api/team/invite', require('./api/team/invite'));
+app.use('/api/team/invitations', require('./api/team/invitations'));
 app.use('/api/team/members', require('./api/team/members'));
 app.use('/api/team/roles', require('./api/team/roles'));
+app.use('/api/api-keys', require('./api/apiKeys'));
+app.use('/api/dialer/token', require('./api/dialer/token'));
+app.use('/api/dialer/session', require('./api/dialer/session'));
+app.use('/api/dialer/call', require('./api/dialer/call'));
+app.use('/api/dialer/call', require('./api/dialer/callOutcome'));
+app.use('/api/dialer/scorecard', require('./api/dialer/scorecard'));
+app.use('/api/dialer/recording', require('./api/dialer/recording'));
+app.use('/api/dialer/webhooks/voice', require('./api/dialer/webhooks/voice'));
+app.use('/api/dialer/webhooks/status', require('./api/dialer/webhooks/status'));
+app.use('/api/dialer/webhooks/recording', require('./api/dialer/webhooks/recording'));
 
 async function startCampaign(req, res) {
   try {

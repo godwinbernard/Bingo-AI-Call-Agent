@@ -30,6 +30,15 @@ async function checkCallLimit(organizationId, deps = {}) {
     throw new Error('Organization not found');
   }
 
+  if (usage.subscription_tier === 'PAY_AS_YOU_GO') {
+    return {
+      allowed: true,
+      remaining: 0,
+      limit: 0,
+      percentage: 0,
+    };
+  }
+
   const limit = getTierLimit(usage.subscription_tier);
   if (limit === Infinity) {
     return {
@@ -124,12 +133,13 @@ async function getUsageSummary(organizationId, deps = {}) {
 
   const limit = getTierLimit(organization.subscription_tier);
   const used = Number(organization.calls_used_this_month || 0);
-  const percentage = limit === Infinity ? 0 : Math.min(100, Math.floor((used / limit) * 100));
-  const remaining = limit === Infinity ? Infinity : Math.max(limit - used, 0);
+  const isPayg = organization.subscription_tier === 'PAY_AS_YOU_GO';
+  const percentage = limit === Infinity || isPayg ? 0 : Math.min(100, Math.floor((used / limit) * 100));
+  const remaining = limit === Infinity || isPayg ? 0 : Math.max(limit - used, 0);
   const daysUntilReset = organization.usage_reset_date
     ? Math.max(0, Math.ceil((new Date(organization.usage_reset_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
-  const costEstimate = organization.subscription_tier === 'PAY_AS_YOU_GO'
+  const costEstimate = isPayg
     ? Number(organization.usage_records?.[0]?.minutes_used || 0) * 0.08
     : 0;
 

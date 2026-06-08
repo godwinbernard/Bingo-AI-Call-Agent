@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
 
@@ -13,7 +14,7 @@ const fallbackStats = [
 ];
 
 export default function AdminPage() {
-  const [secret, setSecret] = useState('');
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
   const [stats, setStats] = useState(fallbackStats);
@@ -33,9 +34,12 @@ export default function AdminPage() {
         ['Calls today', overview.totalCallsToday.toLocaleString()],
       ]);
     } catch (requestError) {
-      if (requestError.status !== 401) {
-        setError(requestError.message || 'Failed to load admin overview');
+      if (requestError.status === 401) {
+        // Not authenticated — redirect to the dedicated login page
+        router.replace('/admin/login');
+        return;
       }
+      setError(requestError.message || 'Failed to load admin overview');
       setUnlocked(false);
       setStats(fallbackStats);
     } finally {
@@ -47,24 +51,9 @@ export default function AdminPage() {
     loadOverview();
   }, []);
 
-  async function unlock() {
-    setError('');
-    try {
-      await apiFetch('/api/admin/unlock', {
-        method: 'POST',
-        body: JSON.stringify({ secret }),
-      });
-      await loadOverview();
-    } catch (requestError) {
-      setError(requestError.message || 'Invalid admin secret');
-    }
-  }
-
   async function logout() {
     await apiFetch('/api/admin/logout', { method: 'POST' }).catch(() => undefined);
-    setUnlocked(false);
-    setSecret('');
-    setStats(fallbackStats);
+    router.replace('/admin/login');
   }
 
   if (loading) {
@@ -78,18 +67,11 @@ export default function AdminPage() {
 
   if (!unlocked) {
     return (
-      <div className="max-w-xl mx-auto glass-card p-8 space-y-4">
-        <h1 className="text-2xl font-semibold">Admin Access Required</h1>
-        <p className="text-slate-400">Enter the admin secret to unlock the hidden dashboard.</p>
-        <input
-          className="input-base w-full"
-          type="password"
-          placeholder="Admin secret"
-          value={secret}
-          onChange={(event) => setSecret(event.target.value)}
-        />
-        {error ? <p className="text-sm text-red-400">{error}</p> : null}
-        <button className="btn-primary" onClick={unlock}>Unlock Admin</button>
+      <div className="max-w-md mx-auto glass-card p-8 space-y-4">
+        {error && <p className="text-sm text-red-400">{error}</p>}
+        <Link href="/admin/login" className="btn-primary">
+          Go to admin login
+        </Link>
       </div>
     );
   }

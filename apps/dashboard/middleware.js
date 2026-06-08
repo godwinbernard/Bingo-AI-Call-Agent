@@ -1,8 +1,10 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { hasClerkKeys } from '@/lib/clerkConfig';
 import adminAuth from '@/lib/adminAuth';
+import superadminAuth from '@/lib/superadminAuth';
 
 const { isAdminRequestAuthorized } = adminAuth;
+const { isSuperadminRequestAuthorized } = superadminAuth;
 
 const protectedRoutes = createRouteMatcher([
   '/dashboard(.*)',
@@ -20,12 +22,32 @@ const adminSubRoutes = createRouteMatcher([
   '/admin/revenue(.*)',
 ]);
 
-export default function middleware(req) {
-  if (!hasClerkKeys) {
-    if (adminSubRoutes(req) && !isAdminRequestAuthorized(req)) {
-      return Response.redirect(new URL('/admin', req.url));
-    }
+const superadminRoutes = createRouteMatcher([
+  '/superadmin(.*)',
+  '/api/superadmin(.*)',
+]);
 
+const superadminLoginRoute = createRouteMatcher([
+  '/superadmin/login',
+]);
+
+const adminLoginRoute = createRouteMatcher([
+  '/admin/login',
+]);
+
+export default function middleware(req) {
+  // Superadmin routes — protected by their own cookie (never Clerk)
+  if (superadminRoutes(req) && !superadminLoginRoute(req)) {
+    if (!isSuperadminRequestAuthorized(req)) {
+      return Response.redirect(new URL('/superadmin/login', req.url));
+    }
+  }
+
+  if (!hasClerkKeys) {
+    // Without Clerk: only cookie-based admin protection
+    if (adminSubRoutes(req) && !isAdminRequestAuthorized(req)) {
+      return Response.redirect(new URL('/admin/login', req.url));
+    }
     return;
   }
 
@@ -35,7 +57,7 @@ export default function middleware(req) {
     }
 
     if (adminSubRoutes(request) && !isAdminRequestAuthorized(request)) {
-      return Response.redirect(new URL('/admin', request.url));
+      return Response.redirect(new URL('/admin/login', request.url));
     }
   })(req);
 }

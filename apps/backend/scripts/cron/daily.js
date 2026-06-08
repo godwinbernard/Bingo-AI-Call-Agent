@@ -1,6 +1,11 @@
 const { getPrisma } = require('../../src/data/prisma');
 const { sendTransactionalEmail } = require('../../src/email/resendClient');
 const { buildTrialEndingEmail } = require('../../src/email/templates/trialEndingEmail');
+const {
+  enforceBillingLifecycle,
+  expireScheduledSubscriptions,
+} = require('../../src/billing/billingLifecycleService');
+const { expirePendingInvitations } = require('../../src/team/invitationService');
 
 async function main() {
   const prisma = getPrisma();
@@ -22,6 +27,10 @@ async function main() {
       });
     }
   }
+
+  await enforceBillingLifecycle({ prisma, now: new Date() });
+  await expireScheduledSubscriptions({ prisma, now: new Date() });
+  await expirePendingInvitations({ prisma, now: new Date() });
 }
 
 if (require.main === module) {

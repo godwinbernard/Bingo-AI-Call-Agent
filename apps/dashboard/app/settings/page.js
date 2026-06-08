@@ -1,8 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, CheckCircle, XCircle, Loader2, AlertTriangle, Bell, Sliders } from 'lucide-react';
 import ConfirmModal from '@/components/shared/ConfirmModal';
+import { apiFetch } from '@/lib/api';
 
 function MaskedInput({ label, placeholder, envKey }) {
   const [show, setShow] = useState(false);
@@ -91,6 +92,51 @@ export default function SettingsPage() {
   const [useMockData, setUseMockData] = useState(true);
   const [clearLogsModal, setClearLogsModal] = useState(false);
   const [resetDNCModal, setResetDNCModal] = useState(false);
+  const [apiKeys, setApiKeys] = useState([]);
+  const [newApiKeyName, setNewApiKeyName] = useState('');
+  const [apiKeyError, setApiKeyError] = useState('');
+  const [createdApiKey, setCreatedApiKey] = useState('');
+
+  async function loadApiKeys() {
+    try {
+      const response = await apiFetch('/api/api-keys');
+      setApiKeys(response.keys || []);
+    } catch (requestError) {
+      setApiKeyError(requestError.message || 'Failed to load API keys');
+    }
+  }
+
+  useEffect(() => {
+    loadApiKeys();
+  }, []);
+
+  async function createApiKey() {
+    setApiKeyError('');
+    setCreatedApiKey('');
+    try {
+      const response = await apiFetch('/api/api-keys', {
+        method: 'POST',
+        body: JSON.stringify({ name: newApiKeyName }),
+      });
+      setCreatedApiKey(response.key);
+      setNewApiKeyName('');
+      await loadApiKeys();
+    } catch (requestError) {
+      setApiKeyError(requestError.message || 'Failed to create API key');
+    }
+  }
+
+  async function revokeApiKey(apiKeyId) {
+    setApiKeyError('');
+    try {
+      await apiFetch(`/api/api-keys/${apiKeyId}/revoke`, {
+        method: 'POST',
+      });
+      await loadApiKeys();
+    } catch (requestError) {
+      setApiKeyError(requestError.message || 'Failed to revoke API key');
+    }
+  }
 
   return (
     <div className="max-w-2xl flex flex-col gap-6 animate-fade-in">
@@ -114,6 +160,44 @@ export default function SettingsPage() {
         <MaskedInput label="Anthropic API Key" placeholder="sk-ant-..." />
         <MaskedInput label="Redis URL" placeholder="redis://localhost:6379" />
         <MaskedInput label="PostgreSQL URL" placeholder="postgresql://user:pass@localhost:5432/bingo_ai" />
+      </Section>
+
+      <Section title="API Keys" icon={Sliders}>
+        <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+          <input
+            className="input-base"
+            placeholder="New API key name"
+            value={newApiKeyName}
+            onChange={(event) => setNewApiKeyName(event.target.value)}
+          />
+          <button className="btn-secondary" onClick={createApiKey} disabled={!newApiKeyName}>
+            Create New Key
+          </button>
+        </div>
+        <p className="text-xs text-slate-400">Keys are only available on Growth and Enterprise plans. Store the raw key safely because it is shown once.</p>
+        {createdApiKey ? (
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm">
+            <p className="font-medium text-emerald-300">New key created</p>
+            <p className="mt-1 break-all text-slate-200">{createdApiKey}</p>
+          </div>
+        ) : null}
+        {apiKeyError ? <p className="text-sm text-red-400">{apiKeyError}</p> : null}
+        <div className="space-y-3">
+          {apiKeys.map((key) => (
+            <div key={key.id} className="flex items-center justify-between gap-4 rounded-xl bg-slate-900/60 p-4">
+              <div>
+                <p className="font-medium text-slate-100">{key.name}</p>
+                <p className="text-xs text-slate-400">
+                  {key.key_prefix} • Last used {key.last_used_at ? new Date(key.last_used_at).toLocaleString() : 'never'}
+                </p>
+              </div>
+              <button className="btn-danger" onClick={() => revokeApiKey(key.id)} disabled={!key.is_active}>
+                Revoke
+              </button>
+            </div>
+          ))}
+          {apiKeys.length === 0 ? <p className="text-sm text-slate-400">No active API keys yet.</p> : null}
+        </div>
       </Section>
 
       {/* Call Settings */}

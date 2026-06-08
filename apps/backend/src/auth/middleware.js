@@ -5,6 +5,13 @@ function sendAuthError(res, error) {
   return res.status(status).json({ error: error.message || 'Unauthorized' });
 }
 
+function readCookieValue(headers, cookieName) {
+  const cookieHeader = headers?.cookie || '';
+  const cookies = cookieHeader.split(';').map((part) => part.trim()).filter(Boolean);
+  const match = cookies.find((cookie) => cookie.startsWith(`${cookieName}=`));
+  return match ? decodeURIComponent(match.slice(cookieName.length + 1)) : '';
+}
+
 async function requireAuth(req, res, next) {
   try {
     req.auth = await authenticateRequest(req);
@@ -15,7 +22,8 @@ async function requireAuth(req, res, next) {
 }
 
 function requireAdminSecret(req, res, next) {
-  const secret = req.headers['x-admin-secret'];
+  const cookieSecret = readCookieValue(req.headers, 'voiceagent_admin_secret');
+  const secret = req.headers['x-admin-secret'] || cookieSecret;
   if (!secret || secret !== process.env.ADMIN_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }

@@ -46,6 +46,48 @@ export default function AdminCustomersPage() {
     }
   }
 
+  async function extendTrial(customer) {
+    const days = Number(window.prompt(`Extend ${customer.name} trial by how many days?`, '7') || '0');
+    if (!days) {
+      return;
+    }
+    await apiFetch(`/api/admin/customers/${customer.id}/extend-trial`, {
+      method: 'POST',
+      body: JSON.stringify({ days }),
+    });
+    await loadCustomers();
+  }
+
+  async function changePlan(customer) {
+    const tier = window.prompt('Enter plan tier (STARTER, GROWTH, ENTERPRISE, PAY_AS_YOU_GO)', customer.plan);
+    if (!tier) {
+      return;
+    }
+    await apiFetch(`/api/admin/customers/${customer.id}/change-plan`, {
+      method: 'POST',
+      body: JSON.stringify({ tier }),
+    });
+    await loadCustomers();
+  }
+
+  async function impersonate(customer) {
+    const response = await apiFetch(`/api/admin/customers/${customer.id}/impersonate`, {
+      method: 'POST',
+      body: JSON.stringify({ baseUrl: window.location.origin }),
+    });
+
+    if (response?.impersonation_token) {
+      window.localStorage.setItem('voiceagent_impersonation_token', response.impersonation_token);
+    }
+
+    if (response?.impersonation_url) {
+      window.open(response.impersonation_url, '_blank', 'noopener,noreferrer');
+    } else if (response?.impersonation_token) {
+      await navigator.clipboard.writeText(response.impersonation_token);
+      alert('Impersonation token copied to clipboard');
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-xl mx-auto glass-card p-8">
@@ -72,7 +114,7 @@ export default function AdminCustomersPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Customers</h1>
-          <p className="text-slate-400 text-sm mt-1">Live organization rows from the admin data service.</p>
+          <p className="text-slate-400 text-sm mt-1">Live organization rows from the admin backend.</p>
         </div>
         <Link href="/admin" className="btn-ghost">Back to overview</Link>
       </div>
@@ -87,12 +129,16 @@ export default function AdminCustomersPage() {
               <th className="py-3">Calls Used</th>
               <th className="py-3">Status</th>
               <th className="py-3">Joined</th>
+              <th className="py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
             {customers.map((customer) => (
-              <tr key={customer.name} className="border-b border-slate-900">
-                <td className="py-3">{customer.name}</td>
+              <tr key={customer.id} className="border-b border-slate-900">
+                <td className="py-3">
+                  <div className="font-medium">{customer.name}</div>
+                  <div className="text-xs text-slate-500">{customer.billingEmail}</div>
+                </td>
                 <td className="py-3">{customer.plan}</td>
                 <td className="py-3">{customer.mrr}</td>
                 <td className="py-3">{customer.calls}</td>
@@ -100,6 +146,13 @@ export default function AdminCustomersPage() {
                   <span className="badge">{customer.status}</span>
                 </td>
                 <td className="py-3">{customer.joined}</td>
+                <td className="py-3">
+                  <div className="flex flex-wrap gap-2">
+                    <button className="btn-secondary" onClick={() => extendTrial(customer)}>Extend Trial</button>
+                    <button className="btn-secondary" onClick={() => changePlan(customer)}>Change Plan</button>
+                    <button className="btn-primary" onClick={() => impersonate(customer)}>Impersonate</button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

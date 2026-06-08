@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireTenant } = require('../../tenancy/tenantMiddleware');
+const { requireTenant, requireBillingMutationAccess } = require('../../tenancy/tenantMiddleware');
 const { checkCallLimit, getUsageSummary, incrementCallUsage } = require('../../billing/usageService');
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.get('/', requireTenant, async (req, res) => {
   }
 });
 
-router.post('/increment', requireTenant, async (req, res) => {
+router.post('/increment', requireTenant, requireBillingMutationAccess, async (req, res) => {
   try {
     const { minutes = 0 } = req.body;
     const limit = await checkCallLimit(req.organization.id);
