@@ -1,65 +1,126 @@
 "use client";
-import { motion } from "framer-motion";
-import { FEATURES } from "@/lib/constants";
+import { motion, type Variants } from "framer-motion";
+import { Mic2, Brain, Zap, BarChart3, Plug2, ShieldCheck } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { GradientText } from "@/components/ui/GradientText";
 
-const COLOR_MAP = {
-  teal: { bg: "rgba(0,245,212,0.06)", border: "rgba(0,245,212,0.15)", text: "#00f5d4" },
-  purple: { bg: "rgba(123,97,255,0.06)", border: "rgba(123,97,255,0.15)", text: "#7b61ff" },
-  red: { bg: "rgba(255,107,107,0.06)", border: "rgba(255,107,107,0.15)", text: "#ff6b6b" },
+const FEATURES = [
+  {
+    Icon: Mic2,
+    title: "Ultra-Realistic Voice",
+    description:
+      "ElevenLabs-powered voices indistinguishable from humans. Natural pauses, dynamic tone, and emotional inflection across 48+ languages.",
+    accent: "#4F8EF7",
+  },
+  {
+    Icon: Brain,
+    title: "Adaptive AI Brain",
+    description:
+      "Claude-powered engine handles objections, follows your script, and escalates intelligently. Learns from every call.",
+    accent: "#8B5CF6",
+  },
+  {
+    Icon: Zap,
+    title: "Sub-500ms Response",
+    description:
+      "Streaming STT + parallel TTS pipeline delivers responses faster than any human rep. No awkward dead air.",
+    accent: "#F59E0B",
+  },
+  {
+    Icon: BarChart3,
+    title: "Real-Time Analytics",
+    description:
+      "Live monitoring, conversion funnels, A/B script testing, and exportable reports — all in one unified dashboard.",
+    accent: "#4F8EF7",
+  },
+  {
+    Icon: Plug2,
+    title: "Native CRM Sync",
+    description:
+      "Push outcomes to HubSpot, Salesforce, Pipedrive, and 40+ apps via Zapier. Logged automatically after every call.",
+    accent: "#8B5CF6",
+  },
+  {
+    Icon: ShieldCheck,
+    title: "Built-in Compliance",
+    description:
+      "Automatic DNC checking, TCPA calling-hours enforcement, consent recording, and full audit trails out of the box.",
+    accent: "#10B981",
+  },
+];
+
+const containerVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0 },
 };
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 px-4 sm:px-6">
+    <section id="features" className="py-28 px-5 sm:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <SectionLabel color="teal">Features</SectionLabel>
+        <div className="text-center mb-18">
+          <SectionLabel>Platform</SectionLabel>
           <h2
-            className="text-3xl sm:text-5xl font-extrabold font-head mt-5 mb-5"
-            style={{ color: "rgba(255,255,255,0.95)" }}
+            className="text-[1.9rem] sm:text-[2.6rem] md:text-[3rem] font-extrabold font-head mt-5 mb-5 tracking-tight leading-[1.12]"
+            style={{ color: "#E2E8F0" }}
           >
-            Everything You Need to{" "}
-            <GradientText>Scale Outreach</GradientText>
+            Everything you need to{" "}
+            <span className="gradient-text">scale outreach</span>
           </h2>
-          <p className="text-base sm:text-lg max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.5)" }}>
-            One platform. Unlimited calls. Zero overhead. Replace your entire outbound calling team.
+          <p
+            className="text-[1rem] sm:text-[1.06rem] max-w-[520px] mx-auto leading-[1.75]"
+            style={{ color: "rgba(226,232,240,0.48)" }}
+          >
+            One platform. Unlimited calls. Replace your entire outbound calling team with AI that
+            never sleeps, never hesitates, and always follows the script.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((f, i) => {
-            const c = COLOR_MAP[f.color];
-            return (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-                whileHover={{ y: -4 }}
-                className="glass-card p-6 cursor-default"
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
+          {FEATURES.map((f) => (
+            <motion.div
+              key={f.title}
+              variants={cardVariants}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              whileHover={{ y: -3, transition: { duration: 0.2 } }}
+              className="glass-card p-7 cursor-default group"
+            >
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-all duration-300"
+                style={{
+                  background: `${f.accent}12`,
+                  border: `1px solid ${f.accent}28`,
+                }}
               >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5"
-                  style={{ background: c.bg, border: `1px solid ${c.border}` }}
-                >
-                  {f.icon}
-                </div>
-                <h3
-                  className="text-lg font-bold font-head mb-3"
-                  style={{ color: "rgba(255,255,255,0.9)" }}
-                >
-                  {f.title}
-                </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
-                  {f.description}
-                </p>
-              </motion.div>
-            );
-          })}
-        </div>
+                <f.Icon size={19} style={{ color: f.accent }} strokeWidth={1.75} />
+              </div>
+              <h3
+                className="text-[15.5px] font-semibold font-head mb-2.5 leading-snug"
+                style={{ color: "#E2E8F0" }}
+              >
+                {f.title}
+              </h3>
+              <p
+                className="text-[13.5px] leading-[1.7]"
+                style={{ color: "rgba(226,232,240,0.47)" }}
+              >
+                {f.description}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

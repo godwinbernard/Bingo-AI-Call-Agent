@@ -4,7 +4,7 @@ const BUBBLES = [
   {
     role: "agent",
     text: "Hi {{first_name}}, this is Alex from {{company_name}}. Do you have 30 seconds?",
-    color: "#00f5d4",
+    color: "#4F8EF7",
   },
   {
     role: "prospect",
@@ -14,14 +14,14 @@ const BUBBLES = [
   {
     role: "agent",
     text: "Great! We help businesses like yours cut outreach costs by 80% with AI-powered calling...",
-    color: "#00f5d4",
+    color: "#4F8EF7",
   },
 ];
 
 const BRANCHES = [
-  { label: "Interested", color: "#00f5d4", bg: "rgba(0,245,212,0.12)" },
-  { label: "Objection", color: "#7b61ff", bg: "rgba(123,97,255,0.12)" },
-  { label: "Not now", color: "#ff6b6b", bg: "rgba(255,107,107,0.12)" },
+  { label: "Interested", color: "#4F8EF7", bg: "rgba(0,245,212,0.12)" },
+  { label: "Objection", color: "#8B5CF6", bg: "rgba(123,97,255,0.12)" },
+  { label: "Not now", color: "#F59E0B", bg: "rgba(255,107,107,0.12)" },
 ];
 
 export function ScriptPreview() {
@@ -31,7 +31,7 @@ export function ScriptPreview() {
       style={{
         background: "rgba(255,255,255,0.04)",
         border: "1px solid rgba(255,255,255,0.1)",
-        fontFamily: "var(--font-dm-sans), sans-serif",
+        fontFamily: "var(--font-inter), sans-serif",
       }}
     >
       {/* Header */}
@@ -67,7 +67,7 @@ export function ScriptPreview() {
                       ? "1px solid rgba(0,245,212,0.2)"
                       : "1px solid rgba(255,255,255,0.08)",
                   color: b.color,
-                  fontFamily: "var(--font-dm-sans), sans-serif",
+                  fontFamily: "var(--font-inter), sans-serif",
                 }}
               >
                 {b.text}

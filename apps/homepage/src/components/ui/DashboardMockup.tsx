@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react";
 
 const CALLS = [
-  { name: "Sarah Johnson", status: "Converted", duration: "4:23", time: "2m ago", color: "#00f5d4" },
-  { name: "Michael Chen", status: "Callback", duration: "2:10", time: "5m ago", color: "#7b61ff" },
-  { name: "Emma Davis", status: "Converted", duration: "6:05", time: "8m ago", color: "#00f5d4" },
-  { name: "James Wilson", status: "No Answer", duration: "0:30", time: "11m ago", color: "#ff6b6b" },
-  { name: "Olivia Martinez", status: "Voicemail", duration: "1:15", time: "14m ago", color: "rgba(255,255,255,0.4)" },
+  { name: "Sarah Johnson", status: "Converted", duration: "4:23", time: "2m ago", color: "#10B981" },
+  { name: "Michael Chen", status: "Callback", duration: "2:10", time: "5m ago", color: "#4F8EF7" },
+  { name: "Emma Davis", status: "Converted", duration: "6:05", time: "8m ago", color: "#10B981" },
+  { name: "James Wilson", status: "No Answer", duration: "0:30", time: "11m ago", color: "#F59E0B" },
+  { name: "Olivia Martinez", status: "Voicemail", duration: "1:15", time: "14m ago", color: "rgba(226,232,240,0.35)" },
 ];
 
 export function DashboardMockup() {
@@ -25,7 +25,7 @@ export function DashboardMockup() {
       style={{
         background: "rgba(255,255,255,0.04)",
         border: "1px solid rgba(255,255,255,0.1)",
-        fontFamily: "var(--font-dm-sans), sans-serif",
+        fontFamily: "var(--font-inter), sans-serif",
       }}
     >
       {/* Header */}
@@ -45,9 +45,9 @@ export function DashboardMockup() {
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-3 mb-4">
           {[
-            { label: "Active Now", value: activeCount, color: "#00f5d4" },
-            { label: "Converted", value: "38%", color: "#7b61ff" },
-            { label: "Avg Duration", value: "3:42", color: "#ff6b6b" },
+            { label: "Active Now", value: activeCount, color: "#4F8EF7" },
+            { label: "Converted", value: "38%", color: "#10B981" },
+            { label: "Avg Duration", value: "3:42", color: "#8B5CF6" },
           ].map((s) => (
             <div
               key={s.label}

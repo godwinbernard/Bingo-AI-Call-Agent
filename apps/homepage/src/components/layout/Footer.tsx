@@ -21,25 +21,35 @@ export function Footer() {
       className="relative z-10 pt-16 pb-8"
       style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
           {/* Brand col */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2.5 mb-5">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold"
-                style={{ background: "linear-gradient(135deg, #00f5d4, #7b61ff)" }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm text-white"
+                style={{
+                  background: "linear-gradient(135deg, #4F8EF7 0%, #8B5CF6 100%)",
+                  boxShadow: "0 2px 12px rgba(79,142,247,0.25)",
+                }}
               >
                 B
               </div>
-              <span className="font-bold font-head" style={{ color: "rgba(255,255,255,0.9)" }}>
+              <span
+                className="font-semibold font-head text-[15px]"
+                style={{ color: "rgba(226,232,240,0.9)" }}
+              >
                 Bingo AI
               </span>
             </div>
-            <p className="text-sm leading-relaxed mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>
-              The world&apos;s most advanced AI call agent platform. Built for scale, compliance, and conversion.
+            <p
+              className="text-[13px] leading-[1.7] mb-5"
+              style={{ color: "rgba(226,232,240,0.38)" }}
+            >
+              The world&apos;s most advanced AI call agent platform. Built for
+              scale, compliance, and conversion.
             </p>
-            <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+            <p className="text-[12px]" style={{ color: "rgba(226,232,240,0.28)" }}>
               hello@bingo.ai
             </p>
           </div>
@@ -47,18 +57,25 @@ export function Footer() {
           {/* Link cols */}
           {COLS.map((col) => (
             <div key={col.title}>
-              <h4 className="text-sm font-semibold mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>
+              <h4
+                className="text-[12px] font-semibold mb-5 tracking-[0.08em] uppercase"
+                style={{ color: "rgba(226,232,240,0.45)" }}
+              >
                 {col.title}
               </h4>
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-3.5">
                 {col.links.map((link) => (
                   <li key={link}>
                     <a
                       href="#"
-                      className="text-sm transition-colors"
-                      style={{ color: "rgba(255,255,255,0.4)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                      className="text-[13px] transition-colors duration-200"
+                      style={{ color: "rgba(226,232,240,0.38)" }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = "rgba(226,232,240,0.78)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = "rgba(226,232,240,0.38)")
+                      }
                     >
                       {link}
                     </a>
@@ -70,14 +87,14 @@ export function Footer() {
         </div>
 
         <div
-          className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8"
+          className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-7"
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
         >
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+          <p className="text-[12px]" style={{ color: "rgba(226,232,240,0.28)" }}>
             © {new Date().getFullYear()} Bingo AI, Inc. All rights reserved.
           </p>
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
-            Made with ❤️ for sales teams everywhere
+          <p className="text-[12px]" style={{ color: "rgba(226,232,240,0.28)" }}>
+            Built for sales teams who move fast
           </p>
         </div>
       </div>

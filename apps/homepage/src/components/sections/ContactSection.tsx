@@ -2,74 +2,79 @@
 import { motion } from "framer-motion";
 import { Mail, MessageSquare, Calendar } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { GradientText } from "@/components/ui/GradientText";
 
 const CHANNELS = [
   {
-    icon: Mail,
+    Icon: Mail,
     title: "Email Us",
     description: "hello@bingo.ai",
     sub: "We reply within 2 hours",
-    color: "#00f5d4",
+    accent: "#4F8EF7",
   },
   {
-    icon: MessageSquare,
+    Icon: MessageSquare,
     title: "Live Chat",
     description: "Chat with our team",
     sub: "Mon–Fri 9am–6pm EST",
-    color: "#7b61ff",
+    accent: "#8B5CF6",
   },
   {
-    icon: Calendar,
+    Icon: Calendar,
     title: "Book a Demo",
     description: "30-minute walkthrough",
     sub: "Pick a time that works for you",
-    color: "#ff6b6b",
+    accent: "#10B981",
   },
 ];
 
 export function ContactSection() {
   return (
-    <section className="py-24 px-4 sm:px-6">
+    <section className="py-28 px-5 sm:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-16">
-          <SectionLabel color="purple">Contact</SectionLabel>
+        <div className="text-center mb-14">
+          <SectionLabel>Contact</SectionLabel>
           <h2
-            className="text-3xl sm:text-5xl font-extrabold font-head mt-5 mb-5"
-            style={{ color: "rgba(255,255,255,0.95)" }}
+            className="text-[1.9rem] sm:text-[2.6rem] md:text-[3rem] font-extrabold font-head mt-5 mb-4 tracking-tight leading-[1.12]"
+            style={{ color: "#E2E8F0" }}
           >
             Get in{" "}
-            <GradientText from="#7b61ff" to="#00f5d4">Touch</GradientText>
+            <span className="gradient-text">touch</span>
           </h2>
-          <p className="text-base max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.5)" }}>
-            Have questions? Our team is here to help.
+          <p className="text-[1rem] max-w-sm mx-auto" style={{ color: "rgba(226,232,240,0.48)" }}>
+            Our team is here to help. Choose how you'd like to reach us.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-3 gap-4">
           {CHANNELS.map((ch, i) => (
             <motion.div
               key={ch.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 22 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.4 }}
-              whileHover={{ y: -4 }}
+              transition={{ delay: i * 0.1, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              whileHover={{ y: -3, transition: { duration: 0.2 } }}
               className="glass-card p-7 text-center cursor-pointer"
             >
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-5"
-                style={{ background: `${ch.color}15`, border: `1px solid ${ch.color}30` }}
+                className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-5"
+                style={{
+                  background: `${ch.accent}10`,
+                  border: `1px solid ${ch.accent}28`,
+                }}
               >
-                <ch.icon size={20} style={{ color: ch.color }} />
+                <ch.Icon size={18} style={{ color: ch.accent }} strokeWidth={1.75} />
               </div>
-              <h3 className="font-bold mb-2 font-head" style={{ color: "rgba(255,255,255,0.9)" }}>
+              <h3
+                className="text-[14.5px] font-semibold font-head mb-2"
+                style={{ color: "#E2E8F0" }}
+              >
                 {ch.title}
               </h3>
-              <p className="text-sm font-medium mb-1" style={{ color: ch.color }}>
+              <p className="text-[13px] font-medium mb-1" style={{ color: ch.accent }}>
                 {ch.description}
               </p>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+              <p className="text-[12px]" style={{ color: "rgba(226,232,240,0.38)" }}>
                 {ch.sub}
               </p>
             </motion.div>

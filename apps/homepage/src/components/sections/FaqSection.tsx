@@ -1,51 +1,64 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { FAQ_ITEMS } from "@/lib/constants";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { GradientText } from "@/components/ui/GradientText";
 
 export function FaqSection() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-24 px-4 sm:px-6">
+    <section id="faq" className="py-28 px-5 sm:px-8">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-16">
-          <SectionLabel color="teal">FAQ</SectionLabel>
+          <SectionLabel>FAQ</SectionLabel>
           <h2
-            className="text-3xl sm:text-5xl font-extrabold font-head mt-5 mb-5"
-            style={{ color: "rgba(255,255,255,0.95)" }}
+            className="text-[1.9rem] sm:text-[2.6rem] md:text-[3rem] font-extrabold font-head mt-5 mb-5 tracking-tight leading-[1.12]"
+            style={{ color: "#E2E8F0" }}
           >
             Common{" "}
-            <GradientText>Questions</GradientText>
+            <span className="gradient-text">questions</span>
           </h2>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {FAQ_ITEMS.map((item, i) => (
             <div
               key={i}
-              className="glass-card overflow-hidden"
-              style={open === i ? { border: "1px solid rgba(0,245,212,0.2)" } : {}}
+              className="rounded-2xl overflow-hidden transition-all duration-200"
+              style={
+                open === i
+                  ? {
+                      background: "rgba(79,142,247,0.05)",
+                      border: "1px solid rgba(79,142,247,0.2)",
+                    }
+                  : {
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                    }
+              }
             >
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between px-6 py-5 text-left gap-4"
+                aria-expanded={open === i}
               >
                 <span
-                  className="text-sm font-semibold"
-                  style={{ color: open === i ? "#00f5d4" : "rgba(255,255,255,0.85)" }}
+                  className="text-[14px] font-semibold leading-snug transition-colors duration-200"
+                  style={{ color: open === i ? "#4F8EF7" : "#E2E8F0" }}
                 >
                   {item.question}
                 </span>
                 <motion.div
-                  animate={{ rotate: open === i ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                  animate={{ rotate: open === i ? 0 : 0 }}
                   className="flex-shrink-0"
                 >
-                  <ChevronDown size={16} style={{ color: "rgba(255,255,255,0.4)" }} />
+                  {open === i ? (
+                    <Minus size={15} style={{ color: "#4F8EF7" }} />
+                  ) : (
+                    <Plus size={15} style={{ color: "rgba(226,232,240,0.35)" }} />
+                  )}
                 </motion.div>
               </button>
 
@@ -55,12 +68,12 @@ export function FaqSection() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
                     style={{ overflow: "hidden" }}
                   >
                     <p
-                      className="px-6 pb-5 text-sm leading-relaxed"
-                      style={{ color: "rgba(255,255,255,0.55)" }}
+                      className="px-6 pb-6 text-[13.5px] leading-[1.75]"
+                      style={{ color: "rgba(226,232,240,0.52)" }}
                     >
                       {item.answer}
                     </p>

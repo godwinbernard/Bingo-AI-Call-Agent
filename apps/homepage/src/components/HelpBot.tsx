@@ -31,10 +31,10 @@ export function HelpBot() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
-        style={{ background: "linear-gradient(135deg, #00f5d4, #7b61ff)" }}
+        style={{ background: "linear-gradient(135deg, #4F8EF7, #8B5CF6)" }}
         aria-label="Open help chat"
       >
-        {open ? <X size={22} color="#050510" /> : <MessageCircle size={22} color="#050510" />}
+        {open ? <X size={22} color="#ffffff" /> : <MessageCircle size={22} color="#ffffff" />}
       </motion.button>
 
       {/* Chat window */}
@@ -48,7 +48,7 @@ export function HelpBot() {
             className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-2xl overflow-hidden flex flex-col"
             style={{
               background: "rgba(10,10,20,0.97)",
-              border: "1px solid rgba(0,245,212,0.2)",
+              border: "1px solid rgba(79,142,247,0.2)",
               backdropFilter: "blur(20px)",
               maxHeight: "480px",
               boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
@@ -57,11 +57,11 @@ export function HelpBot() {
             {/* Header */}
             <div
               className="flex items-center gap-3 px-4 py-3"
-              style={{ background: "rgba(0,245,212,0.08)", borderBottom: "1px solid rgba(0,245,212,0.1)" }}
+              style={{ background: "rgba(79,142,247,0.08)", borderBottom: "1px solid rgba(79,142,247,0.1)" }}
             >
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
-                style={{ background: "linear-gradient(135deg, #00f5d4, #7b61ff)", color: "#050510" }}
+                style={{ background: "linear-gradient(135deg, #4F8EF7, #8B5CF6)", color: "#ffffff" }}
               >
                 B
               </div>
@@ -69,7 +69,7 @@ export function HelpBot() {
                 <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.9)" }}>
                   Bingo Assistant
                 </p>
-                <p className="text-xs flex items-center gap-1" style={{ color: "#00f5d4" }}>
+                <p className="text-xs flex items-center gap-1" style={{ color: "#4F8EF7" }}>
                   <span className="status-dot" style={{ width: 6, height: 6, display: "inline-block" }} />
                   Online
                 </p>
@@ -88,8 +88,8 @@ export function HelpBot() {
                     style={
                       msg.role === "user"
                         ? {
-                            background: "rgba(0,245,212,0.12)",
-                            border: "1px solid rgba(0,245,212,0.2)",
+                            background: "rgba(79,142,247,0.12)",
+                            border: "1px solid rgba(79,142,247,0.2)",
                             color: "rgba(255,255,255,0.9)",
                           }
                         : {
@@ -144,9 +144,9 @@ export function HelpBot() {
                 type="submit"
                 disabled={!inputValue.trim()}
                 className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-40"
-                style={{ background: "#00f5d4" }}
+                style={{ background: "#4F8EF7" }}
               >
-                <Send size={14} color="#050510" />
+                <Send size={14} color="#ffffff" />
               </button>
             </form>
           </motion.div>

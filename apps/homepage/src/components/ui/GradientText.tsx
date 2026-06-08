@@ -7,7 +7,7 @@ interface Props {
   to?: string;
 }
 
-export function GradientText({ children, className, from = "#00f5d4", to = "#7b61ff" }: Props) {
+export function GradientText({ children, className, from = "#4F8EF7", to = "#8B5CF6" }: Props) {
   return (
     <span
       className={cn("gradient-text", className)}
