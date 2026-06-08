@@ -1,17 +1,33 @@
 "use client";
+import Link from "next/link";
 
 const COLS = [
   {
     title: "Product",
-    links: ["Features", "Pricing", "Changelog", "Roadmap"],
+    links: [
+      { label: "Features", href: "/features" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "Changelog", href: "/changelog" },
+      { label: "Roadmap", href: "/roadmap" },
+    ],
   },
   {
     title: "Company",
-    links: ["About", "Blog", "Careers", "Press"],
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Blog", href: "/blog" },
+      { label: "Careers", href: "/careers" },
+      { label: "Press", href: "/press" },
+    ],
   },
   {
     title: "Legal",
-    links: ["Privacy Policy", "Terms of Service", "TCPA Compliance", "DPA"],
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "TCPA Compliance", href: "/tcpa" },
+      { label: "DPA", href: "/dpa" },
+    ],
   },
 ];
 
@@ -65,9 +81,9 @@ export function Footer() {
               </h4>
               <ul className="flex flex-col gap-3.5">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
                       className="text-[13px] transition-colors duration-200"
                       style={{ color: "rgba(226,232,240,0.38)" }}
                       onMouseEnter={(e) =>
@@ -77,8 +93,8 @@ export function Footer() {
                         (e.currentTarget.style.color = "rgba(226,232,240,0.38)")
                       }
                     >
-                      {link}
-                    </a>
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
