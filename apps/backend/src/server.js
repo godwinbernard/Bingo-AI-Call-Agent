@@ -1,6 +1,9 @@
 require('dotenv').config();
+const http = require('http');
 const express = require('express');
 const path = require('path');
+const { socketServer } = require('./socket/socketServer');
+const { attachTwilioMediaStreamServer } = require('./socket/twilioMediaStream');
 
 const { parseCSV } = require('./data/csvParser');
 const { callQueue } = require('./caller/callQueue');
@@ -423,12 +426,20 @@ async function start() {
     console.warn('[DB] Schema setup failed (PostgreSQL may not be running):', err.message);
   }
 
-  app.listen(PORT, () => {
+  // Create HTTP server so socket.io and WS can share the same port
+  const httpServer = http.createServer(app);
+
+  // Initialize socket.io
+  socketServer.initialize(httpServer);
+
+  // Attach Twilio Media Stream WebSocket server
+  attachTwilioMediaStreamServer(httpServer);
+
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`\n Voice AI Agent running on port ${PORT}`);
     console.log(` Base URL: ${BASE_URL}`);
-    console.log(` POST ${BASE_URL}/campaign/start  — start a campaign`);
-    console.log(` GET  ${BASE_URL}/campaign/status — queue status`);
-    console.log(` GET  ${BASE_URL}/campaign/stats/:id — campaign stats\n`);
+    console.log(` Socket.io: ws://${BASE_URL}`);
+    console.log(` Media stream: ws://${BASE_URL}/api/dialer/stream\n`);
   });
 }
 

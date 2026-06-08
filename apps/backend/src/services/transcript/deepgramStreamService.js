@@ -7,7 +7,8 @@ class DeepgramStreamService {
   constructor(callId, socketIo) {
     this.connection = null;
     this.callId = callId;
-    this.socketIo = socketIo;
+    // Accept an explicit io instance or fall back to the global singleton
+    this._explicitIo = socketIo || null;
     this.deepgramClient = null;
   }
 
@@ -20,6 +21,12 @@ class DeepgramStreamService {
 
   getRoom() {
     return `call_${this.callId}`;
+  }
+
+  get socketIo() {
+    if (this._explicitIo) return this._explicitIo;
+    // Lazy-load singleton to avoid circular require at module load time
+    return require('../../socket/socketServer').socketServer.getIo();
   }
 
   emit(event, payload) {
