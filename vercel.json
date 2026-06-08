@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd apps/homepage && npm install && npm run build",
+  "outputDirectory": "apps/homepage/.next",
+  "installCommand": "echo skip",
+  "framework": "nextjs"
+}
